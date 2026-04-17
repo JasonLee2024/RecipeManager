@@ -1,0 +1,44 @@
+﻿{
+  "Policy": {
+    "RequiredFields": [
+      "ID",
+      "Name",
+      "Category",
+      "Ingredients",
+      "Steps"
+    ],
+    "StrictValidation": true
+  },
+  "CodingStandard": {
+    "Encoding": "UTF-8 with BOM",
+    "LineEnding": "CRLF"
+  },
+  "Storage": {
+    "RecipePath": "Data/Recipes.json",
+    "BackupEnabled": true
+  },
+  "Enums": {
+    "Categories": [
+      "热菜",
+      "汤羹",
+      "主食",
+      "甜点",
+      "凉菜"
+    ],
+    "AllowedTags": [
+      "快手菜",
+      "炒菜",
+      "中式家常菜",
+      "主食类",
+      "米粉",
+      "加工肉制品",
+      "微波炉",
+      "减脂",
+      "高蛋白",
+      "待客",
+      "经典",
+      "川菜",
+      "下饭菜"
+    ]
+  }
+}
