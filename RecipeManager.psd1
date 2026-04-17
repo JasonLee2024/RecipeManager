@@ -1,6 +1,16 @@
 ﻿@{
     RootModule = 'RecipeManager.psm1'
     ModuleVersion = '1.0.0'
+    GUID = 'd4f2cf7e-5e52-4b77-93a0-1884e63f14f2'
+    PowerShellVersion = '7.0'
     Author = 'MasterGuardian Architect'
-    FunctionsToExport = '*'
+    Description = 'RecipeManager module for local recipe CRUD, validation and UI management.'
+    FunctionsToExport = @(
+        'Get-Recipe',
+        'New-Recipe',
+        'Remove-Recipe',
+        'Set-Recipe',
+        'Start-RecipeManager',
+        'Invoke-RecipeUI'
+    )
 }

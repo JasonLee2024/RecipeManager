@@ -7,7 +7,7 @@
         本函数作为 Public 对外契约层，不直接操作磁盘，而是通过调用底层 Invoke-DataProvider 获取数据。
         支持多维度组合查询（名称模糊匹配、分类精准匹配、标签匹配），并支持管道符 (Pipeline) 级联操作。
     .PARAMETER Name
-        要查询的菜谱名称（支持正则/模糊匹配）。
+        要查询的菜谱名称（默认按子串模糊匹配）。
     .PARAMETER Category
         按分类筛选（如：热菜、汤羹）。
     .PARAMETER Tag
@@ -21,6 +21,9 @@
     .EXAMPLE
         PS> Get-Recipe -Name "番茄"
         模糊查询：名称中包含“番茄”的所有菜谱。
+    .EXAMPLE
+        PS> Get-Recipe -Name "^番茄.*蛋$" -Regex
+        正则查询：按正则表达式筛选菜谱名称。
     #>
     [CmdletBinding()]
     param(
@@ -34,7 +37,11 @@
 
         # 标签筛选
         [Parameter()]
-        [string]$Tag
+        [string]$Tag,
+
+        # 名称匹配方式：默认模糊；指定后启用正则
+        [Parameter()]
+        [switch]$Regex
     )
 
     process {
@@ -55,8 +62,14 @@
 
             # [维度 A：按名称模糊过滤]
             if ($PSBoundParameters.ContainsKey('Name')) {
-                Write-Verbose " -> 应用过滤规则: Name 包含 [$Name]"
-                $ResultSet = $ResultSet | Where-Object { $_.Name -match $Name }
+                if ($Regex) {
+                    Write-Verbose " -> 应用过滤规则: Name 正则匹配 [$Name]"
+                    $ResultSet = $ResultSet | Where-Object { $_.Name -match $Name }
+                }
+                else {
+                    Write-Verbose " -> 应用过滤规则: Name 包含 [$Name]"
+                    $ResultSet = $ResultSet | Where-Object { $_.Name -like "*$Name*" }
+                }
             }
 
             # [维度 B：按分类精准过滤]

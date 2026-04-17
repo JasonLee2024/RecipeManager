@@ -26,7 +26,6 @@
         [string]$Name,
 
         [Parameter(Mandatory = $false)]
-        [ValidateSet("热菜", "汤羹", "主食", "甜点")]
         [string]$Category,
 
         [Parameter(Mandatory = $false)]
@@ -59,6 +58,10 @@
 
             # $PSBoundParameters 是一个魔法变量，它记录了用户到底在命令行里输入了哪些参数
             if ($PSBoundParameters.ContainsKey('Category') -and ($TargetRecipe.Category -ne $Category)) {
+                $AllowedCategories = @($script:RecipeConfig.Enums.Categories)
+                if ($AllowedCategories.Count -gt 0 -and $AllowedCategories -notcontains $Category) {
+                    throw "[策略违规] 分类 [$Category] 不在允许集合中。合法集合: $($AllowedCategories -join ', ')"
+                }
                 $TargetRecipe.Category = $Category
                 $StateChanged = $true
             }
@@ -81,6 +84,9 @@
             if ($PSCmdlet.ShouldProcess("菜谱: $Name", "将状态更新写入持久层数据库")) {
                 
                 Write-Verbose "[SRE 轨迹] 正在将更新后的状态推送到 Private 算子..."
+
+                # 保存前复用统一策略校验，避免写入非法状态
+                Invoke-RecipeValidation -Recipe $TargetRecipe -ErrorAction Stop
                 
                 # 委托给底层完成最终的写入和备份
                 Invoke-DataProvider -SaveData $AllRecipes -ErrorAction Stop

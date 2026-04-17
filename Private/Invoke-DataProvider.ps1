@@ -21,10 +21,16 @@
     )
 
     process {
-        # 1. 动态寻址：从全局策略中读取相对路径，并转换为绝对物理路径
-        # $PSScriptRoot 指向 Private 文件夹，所以要退回上一级 (..\)
+        if ($null -eq $script:RecipeConfig) {
+            throw "[致命故障] 系统配置未加载。请重新 Import-Module。"
+        }
+        if ([string]::IsNullOrWhiteSpace($script:ModuleRoot)) {
+            throw "[致命故障] 模块根路径未初始化，无法进行数据寻址。"
+        }
+
+        # 1. 动态寻址：基于模块根路径解析配置中的相对存储路径
         $RelativePath = $script:RecipeConfig.Storage.RecipePath
-        $AbsolutePath = Join-Path (Split-Path $PSScriptRoot -Parent) $RelativePath
+        $AbsolutePath = Join-Path $script:ModuleRoot $RelativePath
 
         # ==========================================
         # 逻辑分支 A：读取数据 (Read)
@@ -75,8 +81,10 @@
                     Write-Verbose "[I/O 策略] 已触发冗余备份: $BackupPath"
                 }
 
-                # 3. 原子化写入 (Depth 10 确保复杂嵌套如 Ingredients 数组不会被截断)
-                $SaveData | ConvertTo-Json -Depth 10 | Set-Content -Path $AbsolutePath -Encoding UTF8 -ErrorAction Stop
+                # 3. 先写入临时文件，再替换主文件，尽量降低并发写入下的损坏风险
+                $TempPath = "$AbsolutePath.tmp"
+                $SaveData | ConvertTo-Json -Depth 10 | Set-Content -Path $TempPath -Encoding UTF8 -ErrorAction Stop
+                Move-Item -Path $TempPath -Destination $AbsolutePath -Force -ErrorAction Stop
                 Write-Verbose "[I/O 成功] 内存数据已成功刷新至物理磁盘。"
             }
             catch {

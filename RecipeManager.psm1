@@ -6,10 +6,20 @@
         必须以 UTF-8 with BOM 格式存储。
 #>
 $ScriptPath = $PSScriptRoot
+$script:ModuleRoot = $ScriptPath
 
 # 读取策略配置
 $ConfigPath = Join-Path $ScriptPath "Config\Settings.json"
-if (Test-Path $ConfigPath) { $script:RecipeConfig = Get-Content $ConfigPath -Raw | ConvertFrom-Json }
+if (-not (Test-Path $ConfigPath)) {
+    throw "[模块初始化失败] 未找到配置文件: $ConfigPath"
+}
+
+try {
+    $script:RecipeConfig = Get-Content -Path $ConfigPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+}
+catch {
+    throw "[模块初始化失败] 配置文件加载或解析失败: $ConfigPath。详情: $($_.Exception.Message)"
+}
 
 # 动态加载分层逻辑：Private -> Public -> UI
 $Layers = @("Private", "Public", "UI")
