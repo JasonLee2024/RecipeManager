@@ -14,6 +14,7 @@
     "LineEnding": "CRLF"
   },
   "Storage": {
+    "RecipeRoot": "Data/Recipes",
     "RecipePath": "Data/Recipes.json",
     "BackupEnabled": true
   },
@@ -25,5 +26,7 @@
   "CookingWorkflowPath": "Config/CookingWorkflow.json",
   "HerbalMedicineSchemaPath": "Config/HerbalMedicineSchema.json",
   "HerbalMaterialsPath": "Data/HerbalMaterials.json",
+  "HerbalMaterialsRoot": "Data/HerbalMaterials",
+  "HerbalMaterialsIndexPath": "Data/HerbalMaterials/index.json",
   "DocsIndexPath": "Docs/CategoryDocIndex.json"
 }

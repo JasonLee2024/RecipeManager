@@ -1,0 +1,47 @@
+[
+  {
+    "name": "当归",
+    "latinName": "Angelica sinensis",
+    "source": "植物",
+    "aliases": [
+      "秦归"
+    ],
+    "file": "Data/HerbalMaterials/当归.json"
+  },
+  {
+    "name": "茯苓",
+    "latinName": "Poria cocos",
+    "source": "菌类",
+    "aliases": [
+      "云苓"
+    ],
+    "file": "Data/HerbalMaterials/茯苓.json"
+  },
+  {
+    "name": "枸杞子",
+    "latinName": "Lycium barbarum",
+    "source": "植物",
+    "aliases": [
+      "枸杞"
+    ],
+    "file": "Data/HerbalMaterials/枸杞子.json"
+  },
+  {
+    "name": "黄芪",
+    "latinName": "Astragalus membranaceus",
+    "source": "植物",
+    "aliases": [
+      "北芪"
+    ],
+    "file": "Data/HerbalMaterials/黄芪.json"
+  },
+  {
+    "name": "山药",
+    "latinName": "Dioscorea opposita",
+    "source": "植物",
+    "aliases": [
+      "淮山"
+    ],
+    "file": "Data/HerbalMaterials/山药.json"
+  }
+]

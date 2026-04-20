@@ -9,6 +9,7 @@ Describe 'RecipeManager behavior checks' {
         $enums = $module.SessionState.PSVariable.GetValue('RecipeEnums')
         $enums | Should -Not -BeNullOrEmpty
         @($enums.Categories) | Should -Contain '主食'
+        @($enums.Categories) | Should -Contain '蒸菜'
     }
 
     It 'loads noodles from dedicated config file' {
@@ -62,6 +63,19 @@ Describe 'RecipeManager behavior checks' {
         $herbalMaterials.Count | Should -BeGreaterThan 0
         @($herbalSchema.HerbalMedicineSchema.中医药性.归经) | Should -Contain '肺'
         @($herbalMaterials.药材名) | Should -Contain '黄芪'
+    }
+
+    It 'prioritizes herbal shard index and keeps it aligned with loaded data' {
+        $module = Get-Module RecipeManager
+        $settings = $module.SessionState.PSVariable.GetValue('RecipeConfig')
+        $loaded = @($module.SessionState.PSVariable.GetValue('HerbalMaterials'))
+        $indexPath = Join-Path $ModuleRoot $settings.HerbalMaterialsIndexPath
+        $indexRows = @(Get-Content -Path $indexPath -Raw | ConvertFrom-Json)
+
+        @($indexRows).Count | Should -BeGreaterThan 0
+        @($loaded).Count | Should -Be @($indexRows).Count
+        @($indexRows.name) | Should -Contain '黄芪'
+        @($indexRows.file) | Should -Contain 'Data/HerbalMaterials/黄芪.json'
     }
 
     It 'returns workflow via public command' {
@@ -268,10 +282,62 @@ Describe 'RecipeManager behavior checks' {
         } | Should -Throw
     }
 
+    It 'accepts valid ServingNote and rejects oversized or whitespace-only' {
+        $module = Get-Module RecipeManager
+        $ok = [PSCustomObject]@{
+            ID = '00000000-0000-0000-0000-000000000010'
+            Name = 'ServingNote样例'
+            Category = '热菜'
+            Ingredients = @([PSCustomObject]@{ Item = '测'; Amount = '1' })
+            Steps = @('步骤')
+            Tags = @('经典')
+            ServingNote = '上桌说明：宜配米饭。'
+        }
+        {
+            & $module { param($r) Invoke-RecipeValidation -Recipe $r -ErrorAction Stop } $ok
+        } | Should -Not -Throw
+
+        $long = 'x' * 4001
+        $tooLong = [PSCustomObject]@{
+            ID = '00000000-0000-0000-0000-000000000011'
+            Name = 'ServingNote过长'
+            Category = '热菜'
+            Ingredients = @([PSCustomObject]@{ Item = '测'; Amount = '1' })
+            Steps = @('步骤')
+            Tags = @('经典')
+            ServingNote = $long
+        }
+        {
+            & $module { param($r) Invoke-RecipeValidation -Recipe $r -ErrorAction Stop } $tooLong
+        } | Should -Throw
+
+        $blank = [PSCustomObject]@{
+            ID = '00000000-0000-0000-0000-000000000012'
+            Name = 'ServingNote空白'
+            Category = '热菜'
+            Ingredients = @([PSCustomObject]@{ Item = '测'; Amount = '1' })
+            Steps = @('步骤')
+            Tags = @('经典')
+            ServingNote = '   '
+        }
+        {
+            & $module { param($r) Invoke-RecipeValidation -Recipe $r -ErrorAction Stop } $blank
+        } | Should -Throw
+    }
+
     It 'loads recipe data through public API' {
         $data = Get-Recipe
         $data | Should -Not -BeNullOrEmpty
         @($data).Count | Should -BeGreaterThan 0
+    }
+
+    It 'stores recipes as one json file per dish under Data/Recipes by category' {
+        $shardRoot = Join-Path $ModuleRoot 'Data/Recipes'
+        Test-Path $shardRoot | Should -BeTrue
+        $shardFiles = @(Get-ChildItem -Path $shardRoot -Recurse -Filter '*.json' -File)
+        $shardFiles.Count | Should -BeGreaterThan 1
+        @($shardFiles.Name) | Should -Contain '番茄炒蛋.json'
+        @($shardFiles.Name) | Should -Contain '包菜洋葱火腿玉米粒炒粉.json'
     }
 
     It 'returns beverage taxonomy from public command' {
@@ -288,6 +354,20 @@ Describe 'RecipeManager behavior checks' {
         $target | Should -Not -BeNullOrEmpty
         $target.DocPath | Should -Be 'Docs/主食/米粉/包菜洋葱火腿玉米粒炒粉.md'
         @($target.DocCategories) | Should -Contain '主食/米粉'
+    }
+
+    It 'filters 蒸菜 by Category and matches DocPath from index' {
+        $steam = @(Get-Recipe -Category '蒸菜')
+        $steam.Count | Should -Be 2
+        $paths = @($steam | ForEach-Object { $_.DocPath }) | Sort-Object -Unique
+        $paths | Should -Contain 'Docs/蒸菜/五花肉蛋羹.md'
+        $paths | Should -Contain 'Docs/蒸菜/粉蒸肉.md'
+        foreach ($r in $steam) {
+            @($r.DocCategories) | Should -Contain '蒸菜'
+        }
+        $rou = @(Get-Recipe -Name '五花肉蛋羹' -Regex | Select-Object -First 1)
+        $rou.ServingNote | Should -Not -BeNullOrEmpty
+        $rou.ServingNote | Should -Match '口感与佐餐'
     }
 
     It 'supports fuzzy name matching by default' {
@@ -318,5 +398,30 @@ Describe 'RecipeManager behavior checks' {
         {
             Remove-Recipe -ID '00000000-0000-0000-0000-000000000000' -WhatIf -ErrorAction Stop
         } | Should -Not -Throw
+    }
+
+    It 'throws on import when herbal shard index exists but loads zero records' {
+        $cloneRoot = Join-Path $TestDrive 'RecipeManagerClone'
+        New-Item -Path $cloneRoot -ItemType Directory -Force | Out-Null
+        Copy-Item -Path (Join-Path $ModuleRoot '*') -Destination $cloneRoot -Recurse -Force
+
+        $cloneSettingsPath = Join-Path $cloneRoot 'Config/Settings.json'
+        $settings = Get-Content -Path $cloneSettingsPath -Raw | ConvertFrom-Json
+        $settings.HerbalMaterialsPath = 'Data/HerbalMaterials-fallback.json'
+        $settings.HerbalMaterialsRoot = 'Data/HerbalMaterials'
+        $settings.HerbalMaterialsIndexPath = 'Data/HerbalMaterials/index.json'
+        $settings | ConvertTo-Json -Depth 20 | Set-Content -Path $cloneSettingsPath -Encoding UTF8
+
+        $cloneShardRoot = Join-Path $cloneRoot 'Data/HerbalMaterials'
+        New-Item -Path $cloneShardRoot -ItemType Directory -Force | Out-Null
+        '[]' | Set-Content -Path (Join-Path $cloneShardRoot 'index.json') -Encoding UTF8
+        '[{"药材名":"回退样例"}]' | Set-Content -Path (Join-Path $cloneRoot 'Data/HerbalMaterials-fallback.json') -Encoding UTF8
+
+        Remove-Module RecipeManager -ErrorAction SilentlyContinue
+        {
+            Import-Module (Join-Path $cloneRoot 'RecipeManager.psd1') -Force -ErrorAction Stop
+        } | Should -Throw
+
+        Import-Module (Join-Path $ModuleRoot 'RecipeManager.psd1') -Force
     }
 }

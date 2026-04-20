@@ -175,16 +175,74 @@ $HerbalMaterialsPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfi
 else {
     Join-Path $ScriptPath "Data\HerbalMaterials.json"
 }
-
-if (-not (Test-Path $HerbalMaterialsPath)) {
-    throw "[模块初始化失败] 未找到药材数据文件: $HerbalMaterialsPath"
+$HerbalMaterialsRoot = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.HerbalMaterialsRoot)) {
+    Join-Path $ScriptPath $script:RecipeConfig.HerbalMaterialsRoot
+}
+else {
+    Join-Path $ScriptPath "Data\HerbalMaterials"
+}
+$HerbalMaterialsIndexPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.HerbalMaterialsIndexPath)) {
+    Join-Path $ScriptPath $script:RecipeConfig.HerbalMaterialsIndexPath
+}
+else {
+    Join-Path $HerbalMaterialsRoot "index.json"
 }
 
-try {
-    $script:HerbalMaterials = Get-Content -Path $HerbalMaterialsPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+$loadedFromShard = $false
+if (Test-Path $HerbalMaterialsRoot) {
+    try {
+        $records = @()
+        $hasShardInput = $false
+        if (Test-Path $HerbalMaterialsIndexPath) {
+            $hasShardInput = $true
+            $indexRows = @(Get-Content -Path $HerbalMaterialsIndexPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop)
+            foreach ($row in $indexRows) {
+                $rowFile = [string]$row.file
+                if ([string]::IsNullOrWhiteSpace($rowFile)) {
+                    continue
+                }
+                $filePath = if ([System.IO.Path]::IsPathRooted($rowFile)) { $rowFile } else { Join-Path $ScriptPath $rowFile }
+                if (-not (Test-Path $filePath)) {
+                    throw "索引引用的药材文件不存在: $rowFile"
+                }
+                $records += @(Get-Content -Path $filePath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop)
+            }
+        }
+        else {
+            $shardFiles = @(Get-ChildItem -Path $HerbalMaterialsRoot -Filter '*.json' -File -ErrorAction Stop | Where-Object { $_.Name -ne 'index.json' })
+            if ($shardFiles.Count -gt 0) {
+                $hasShardInput = $true
+            }
+            foreach ($file in $shardFiles) {
+                $records += @(Get-Content -Path $file.FullName -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop)
+            }
+        }
+
+        if ($hasShardInput -and @($records).Count -eq 0) {
+            throw "检测到药材分片输入，但未能成功加载任何记录。"
+        }
+
+        if (@($records).Count -gt 0) {
+            $script:HerbalMaterials = @($records)
+            $loadedFromShard = $true
+        }
+    }
+    catch {
+        throw "[模块初始化失败] 药材分片数据加载或解析失败: $HerbalMaterialsRoot。详情: $($_.Exception.Message)"
+    }
 }
-catch {
-    throw "[模块初始化失败] 药材数据加载或解析失败: $HerbalMaterialsPath。详情: $($_.Exception.Message)"
+
+if (-not $loadedFromShard) {
+    if (-not (Test-Path $HerbalMaterialsPath)) {
+        throw "[模块初始化失败] 未找到药材数据文件，且药材分片目录不可用。单文件: $HerbalMaterialsPath；分片目录: $HerbalMaterialsRoot"
+    }
+
+    try {
+        $script:HerbalMaterials = Get-Content -Path $HerbalMaterialsPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+    }
+    catch {
+        throw "[模块初始化失败] 药材数据加载或解析失败: $HerbalMaterialsPath。详情: $($_.Exception.Message)"
+    }
 }
 
 # 校验别名映射目标必须存在于标准技法集合，避免配置漂移

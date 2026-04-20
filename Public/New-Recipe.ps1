@@ -32,6 +32,9 @@
         [string[]]$Tags = @(),
 
         [Parameter(Mandatory = $false)]
+        [string]$ServingNote,
+
+        [Parameter(Mandatory = $false)]
         [switch]$PassThru
     )
 
@@ -57,6 +60,10 @@
                 Steps       = $Steps
                 Tags        = $Tags
                 CreateTime  = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+            }
+
+            if ($PSBoundParameters.ContainsKey('ServingNote') -and -not [string]::IsNullOrWhiteSpace($ServingNote)) {
+                $NewObject | Add-Member -NotePropertyName 'ServingNote' -NotePropertyValue $ServingNote
             }
 
             # 4. 【安检拦截】

@@ -235,6 +235,17 @@ function Invoke-RecipeValidation {
             }
         }
 
+        # 9. 可选字段校验：佐餐/搭配说明（ServingNote，自由文本，不参与标签枚举）
+        if ($Recipe.psobject.Properties.Match('ServingNote').Count -gt 0 -and $null -ne $Recipe.ServingNote) {
+            $sn = [string]$Recipe.ServingNote
+            if ([string]::IsNullOrWhiteSpace($sn)) {
+                throw "[策略违规] ServingNote 不能只含空白字符；若需清空请省略该字段或使用 Set-Recipe 清空语义。"
+            }
+            if ($sn.Length -gt 4000) {
+                throw "[策略违规] ServingNote 超出长度上限（4000 字符）。"
+            }
+        }
+
         Write-Verbose "[策略审计] 目标 [$($Recipe.Name)] 完美合规，准许注入持久层。"
         return $true
     }

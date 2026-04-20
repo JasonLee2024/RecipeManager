@@ -4,7 +4,7 @@
 
 ## Categories（一级分类）
 
-`Categories` 为菜谱的一级分类枚举（例如：热菜、主食、汤羹等）。写入 `Data/Recipes.json` 时的 `Category` 字段必须属于该集合（启用严格校验时）。
+`Categories` 为菜谱的一级分类枚举（例如：热菜、主食、汤羹等）。写入菜谱数据（`Data/Recipes/{Category}/*.json` 分片或历史单体 `Data/Recipes.json`）时的 `Category` 字段必须属于该集合（启用严格校验时）。
 
 ## CategoryHierarchy（分类层级）
 
@@ -27,3 +27,6 @@
 - 主标签本身（如 `主食类`）
 - 以及编码后的二级标签（如 `主食类/米粉`）
 
+## ServingNote（可选佐餐说明）
+
+`servingNote` 在 JSON 中字段名为 **`ServingNote`**：可选自由文本，用于上桌搭配、口感总结等，**不参与** `TagTaxonomy` 校验；与操作性的 `Steps` 分离。启用严格校验时，若存在该字段且内容非空白，长度上限为 4000 字符。

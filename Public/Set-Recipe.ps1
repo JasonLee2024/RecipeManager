@@ -32,7 +32,11 @@ function Set-Recipe {
         [string[]]$Ingredients,
 
         [Parameter(Mandatory = $false)]
-        [string[]]$Steps
+        [string[]]$Steps,
+
+        [Parameter(Mandatory = $false)]
+        [AllowEmptyString()]
+        [string]$ServingNote
     )
 
     process {
@@ -72,6 +76,26 @@ function Set-Recipe {
             if ($PSBoundParameters.ContainsKey('Steps')) {
                 $TargetRecipe.Steps = $Steps
                 $StateChanged = $true
+            }
+            if ($PSBoundParameters.ContainsKey('ServingNote')) {
+                $hadNote = $TargetRecipe.PSObject.Properties.Match('ServingNote').Count -gt 0
+                $oldNote = if ($hadNote) { [string]$TargetRecipe.ServingNote } else { $null }
+
+                if ([string]::IsNullOrWhiteSpace($ServingNote)) {
+                    if ($hadNote) {
+                        [void]$TargetRecipe.PSObject.Properties.Remove('ServingNote')
+                        $StateChanged = $true
+                    }
+                }
+                elseif (-not $hadNote -or $oldNote -ne $ServingNote) {
+                    if ($hadNote) {
+                        $TargetRecipe.ServingNote = $ServingNote
+                    }
+                    else {
+                        $TargetRecipe | Add-Member -NotePropertyName 'ServingNote' -NotePropertyValue $ServingNote
+                    }
+                    $StateChanged = $true
+                }
             }
 
             if (-not $StateChanged) {
