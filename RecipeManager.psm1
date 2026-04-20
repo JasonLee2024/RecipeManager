@@ -1,4 +1,4 @@
-﻿<#
+<#
     .SYNOPSIS
         RecipeManager 架构引擎
     .NOTES
@@ -19,6 +19,220 @@ try {
 }
 catch {
     throw "[模块初始化失败] 配置文件加载或解析失败: $ConfigPath。详情: $($_.Exception.Message)"
+}
+
+$EnumsPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.EnumsPath)) {
+    Join-Path $ScriptPath $script:RecipeConfig.EnumsPath
+}
+else {
+    Join-Path $ScriptPath "Config\Enums.json"
+}
+
+if (-not (Test-Path $EnumsPath)) {
+    throw "[模块初始化失败] 未找到枚举配置文件: $EnumsPath"
+}
+
+try {
+    $script:RecipeEnums = Get-Content -Path $EnumsPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+}
+catch {
+    throw "[模块初始化失败] 枚举配置加载或解析失败: $EnumsPath。详情: $($_.Exception.Message)"
+}
+
+$NoodlesPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.NoodlesPath)) {
+    Join-Path $ScriptPath $script:RecipeConfig.NoodlesPath
+}
+else {
+    Join-Path $ScriptPath "Config\Noodles.json"
+}
+
+if (-not (Test-Path $NoodlesPath)) {
+    throw "[模块初始化失败] 未找到面食配置文件: $NoodlesPath"
+}
+
+try {
+    $script:Noodles = Get-Content -Path $NoodlesPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+}
+catch {
+    throw "[模块初始化失败] 面食配置加载或解析失败: $NoodlesPath。详情: $($_.Exception.Message)"
+}
+
+$BeveragesPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.BeveragesPath)) {
+    Join-Path $ScriptPath $script:RecipeConfig.BeveragesPath
+}
+else {
+    Join-Path $ScriptPath "Config\Beverages.json"
+}
+
+if (-not (Test-Path $BeveragesPath)) {
+    throw "[模块初始化失败] 未找到饮料配置文件: $BeveragesPath"
+}
+
+try {
+    $script:Beverages = Get-Content -Path $BeveragesPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+}
+catch {
+    throw "[模块初始化失败] 饮料配置加载或解析失败: $BeveragesPath。详情: $($_.Exception.Message)"
+}
+
+$ChineseTeaPath = $null
+if ($null -ne $script:Beverages.Beverages -and
+    $null -ne $script:Beverages.Beverages.NonAlcoholicBeverages -and
+    $null -ne $script:Beverages.Beverages.NonAlcoholicBeverages.Tea -and
+    -not [string]::IsNullOrWhiteSpace($script:Beverages.Beverages.NonAlcoholicBeverages.Tea.ChineseTeaTaxonomyPath)) {
+    $ChineseTeaPath = Join-Path $ScriptPath $script:Beverages.Beverages.NonAlcoholicBeverages.Tea.ChineseTeaTaxonomyPath
+}
+else {
+    $ChineseTeaPath = Join-Path $ScriptPath "Config\ChineseTea.json"
+}
+
+if (-not (Test-Path $ChineseTeaPath)) {
+    throw "[模块初始化失败] 未找到中国茶配置文件: $ChineseTeaPath"
+}
+
+try {
+    $script:ChineseTea = Get-Content -Path $ChineseTeaPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+}
+catch {
+    throw "[模块初始化失败] 中国茶配置加载或解析失败: $ChineseTeaPath。详情: $($_.Exception.Message)"
+}
+
+$RegionalCuisinesPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.RegionalCuisinesPath)) {
+    Join-Path $ScriptPath $script:RecipeConfig.RegionalCuisinesPath
+}
+else {
+    Join-Path $ScriptPath "Config\RegionalCuisines.json"
+}
+
+if (-not (Test-Path $RegionalCuisinesPath)) {
+    throw "[模块初始化失败] 未找到地域菜系配置文件: $RegionalCuisinesPath"
+}
+
+try {
+    $script:RegionalCuisines = Get-Content -Path $RegionalCuisinesPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+}
+catch {
+    throw "[模块初始化失败] 地域菜系配置加载或解析失败: $RegionalCuisinesPath。详情: $($_.Exception.Message)"
+}
+
+$CookingTechniquesPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.CookingTechniquesPath)) {
+    Join-Path $ScriptPath $script:RecipeConfig.CookingTechniquesPath
+}
+else {
+    Join-Path $ScriptPath "Config\CookingTechniques.json"
+}
+
+if (-not (Test-Path $CookingTechniquesPath)) {
+    throw "[模块初始化失败] 未找到烹饪技法配置文件: $CookingTechniquesPath"
+}
+
+try {
+    $script:CookingTechniques = Get-Content -Path $CookingTechniquesPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+}
+catch {
+    throw "[模块初始化失败] 烹饪技法配置加载或解析失败: $CookingTechniquesPath。详情: $($_.Exception.Message)"
+}
+
+$CookingWorkflowPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.CookingWorkflowPath)) {
+    Join-Path $ScriptPath $script:RecipeConfig.CookingWorkflowPath
+}
+else {
+    Join-Path $ScriptPath "Config\CookingWorkflow.json"
+}
+
+if (-not (Test-Path $CookingWorkflowPath)) {
+    throw "[模块初始化失败] 未找到烹饪工作流配置文件: $CookingWorkflowPath"
+}
+
+try {
+    $script:CookingWorkflow = Get-Content -Path $CookingWorkflowPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+}
+catch {
+    throw "[模块初始化失败] 烹饪工作流配置加载或解析失败: $CookingWorkflowPath。详情: $($_.Exception.Message)"
+}
+
+$HerbalMedicineSchemaPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.HerbalMedicineSchemaPath)) {
+    Join-Path $ScriptPath $script:RecipeConfig.HerbalMedicineSchemaPath
+}
+else {
+    Join-Path $ScriptPath "Config\HerbalMedicineSchema.json"
+}
+
+if (-not (Test-Path $HerbalMedicineSchemaPath)) {
+    throw "[模块初始化失败] 未找到药膳药材知识框架配置文件: $HerbalMedicineSchemaPath"
+}
+
+try {
+    $script:HerbalMedicineSchema = Get-Content -Path $HerbalMedicineSchemaPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+}
+catch {
+    throw "[模块初始化失败] 药膳药材知识框架配置加载或解析失败: $HerbalMedicineSchemaPath。详情: $($_.Exception.Message)"
+}
+
+$HerbalMaterialsPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.HerbalMaterialsPath)) {
+    Join-Path $ScriptPath $script:RecipeConfig.HerbalMaterialsPath
+}
+else {
+    Join-Path $ScriptPath "Data\HerbalMaterials.json"
+}
+
+if (-not (Test-Path $HerbalMaterialsPath)) {
+    throw "[模块初始化失败] 未找到药材数据文件: $HerbalMaterialsPath"
+}
+
+try {
+    $script:HerbalMaterials = Get-Content -Path $HerbalMaterialsPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+}
+catch {
+    throw "[模块初始化失败] 药材数据加载或解析失败: $HerbalMaterialsPath。详情: $($_.Exception.Message)"
+}
+
+# 校验别名映射目标必须存在于标准技法集合，避免配置漂移
+$CanonicalTechniques = @()
+if ($null -ne $script:CookingTechniques.MediumBased) {
+    foreach ($Medium in $script:CookingTechniques.MediumBased.PSObject.Properties.Name) {
+        $CanonicalTechniques += @($script:CookingTechniques.MediumBased.$Medium)
+    }
+}
+
+$DocsIndexPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.DocsIndexPath)) {
+    Join-Path $ScriptPath $script:RecipeConfig.DocsIndexPath
+}
+else {
+    Join-Path $ScriptPath "Docs\CategoryDocIndex.json"
+}
+
+if (Test-Path $DocsIndexPath) {
+    try {
+        $script:CategoryDocIndex = Get-Content -Path $DocsIndexPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+    }
+    catch {
+        throw "[模块初始化失败] 文档索引加载或解析失败: $DocsIndexPath。详情: $($_.Exception.Message)"
+    }
+}
+else {
+    # 文档索引允许缺省，不阻塞核心 CRUD 能力
+    $script:CategoryDocIndex = $null
+}
+if ($null -ne $script:CookingTechniques.HeatControl) {
+    foreach ($Dimension in $script:CookingTechniques.HeatControl.PSObject.Properties.Name) {
+        $CanonicalTechniques += @($script:CookingTechniques.HeatControl.$Dimension)
+    }
+}
+if ($null -ne $script:CookingTechniques.Preparation) {
+    foreach ($Prep in $script:CookingTechniques.Preparation.PSObject.Properties.Name) {
+        $CanonicalTechniques += @($script:CookingTechniques.Preparation.$Prep)
+    }
+}
+$CanonicalTechniques = $CanonicalTechniques | Select-Object -Unique
+
+if ($null -ne $script:CookingTechniques.Aliases -and $null -ne $script:CookingTechniques.Aliases.AliasToCanonical) {
+    foreach ($AliasKey in $script:CookingTechniques.Aliases.AliasToCanonical.PSObject.Properties.Name) {
+        $Canonical = [string]$script:CookingTechniques.Aliases.AliasToCanonical.$AliasKey
+        if ($CanonicalTechniques -notcontains $Canonical) {
+            throw "[模块初始化失败] 烹饪技法别名映射非法: [$AliasKey] -> [$Canonical]，目标标准技法不存在。"
+        }
+    }
 }
 
 # 动态加载分层逻辑：Private -> Public -> UI

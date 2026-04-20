@@ -1,4 +1,4 @@
-﻿@{
+@{
     RootModule = 'RecipeManager.psm1'
     ModuleVersion = '1.0.0'
     GUID = 'd4f2cf7e-5e52-4b77-93a0-1884e63f14f2'
@@ -11,6 +11,10 @@
         'Remove-Recipe',
         'Set-Recipe',
         'Start-RecipeManager',
+        'Get-CookingWorkflow',
+        'Get-HerbalMaterial',
+        'Test-HerbalMaterial',
+        'Get-BeverageTaxonomy',
         'Invoke-RecipeUI'
     )
 }

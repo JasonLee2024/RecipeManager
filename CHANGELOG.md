@@ -1,20 +1,20 @@
-# Changelog
+# 更新日志
 
-All notable changes to this project are documented in this file.
+本文档记录本项目的重要变更。
 
 ## v1.1.0 - 2026-04-17
 
-### Added
-- Added `Tests/RecipeManager.Tests.ps1` Pester regression tests for query behavior and parameter-set usage.
-- Added explicit module metadata in `RecipeManager.psd1`: `GUID`, `PowerShellVersion`, `Description`, and explicit `FunctionsToExport`.
+### 新增
+- 新增 `Tests/RecipeManager.Tests.ps1`，补充查询行为与参数集用法的 Pester 回归测试。
+- 在 `RecipeManager.psd1` 中补充显式模块元数据：`GUID`、`PowerShellVersion`、`Description`，以及显式 `FunctionsToExport` 列表。
 
-### Changed
-- Improved module bootstrap in `RecipeManager.psm1` with fail-fast config loading and module root initialization.
-- Updated `Invoke-DataProvider` to resolve storage path from module root and use temp-file replacement for safer writes.
-- Updated `Set-Recipe` to validate category against runtime config enums and run `Invoke-RecipeValidation` before save.
-- Updated `Remove-Recipe` to support `ByName` and `ById` parameter sets.
-- Updated `Get-Recipe` default name matching to fuzzy substring (`-like`) and added optional `-Regex` mode.
+### 变更
+- 优化 `RecipeManager.psm1` 模块引导流程，增加配置缺失/解析失败的快速失败机制，并初始化模块根路径。
+- 更新 `Invoke-DataProvider`，数据路径改为基于模块根目录解析，并采用临时文件替换方式提升写入安全性。
+- 更新 `Set-Recipe`，分类校验改为基于运行时配置枚举，并在保存前统一执行 `Invoke-RecipeValidation`。
+- 更新 `Remove-Recipe`，支持 `ByName` 与 `ById` 两种参数集。
+- 更新 `Get-Recipe`，默认名称匹配改为子串模糊匹配（`-like`），并新增可选 `-Regex` 模式。
 
-### Notes
-- Baseline commit created before optimization: `6ceb6cc`.
-- Reliability optimization commit: `639fb85`.
+### 备注
+- 优化前基线提交：`6ceb6cc`。
+- 可靠性优化提交：`639fb85`。

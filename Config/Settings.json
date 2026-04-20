@@ -1,4 +1,4 @@
-﻿{
+{
   "Policy": {
     "RequiredFields": [
       "ID",
@@ -17,28 +17,13 @@
     "RecipePath": "Data/Recipes.json",
     "BackupEnabled": true
   },
-  "Enums": {
-    "Categories": [
-      "热菜",
-      "汤羹",
-      "主食",
-      "甜点",
-      "凉菜"
-    ],
-    "AllowedTags": [
-      "快手菜",
-      "炒菜",
-      "中式家常菜",
-      "主食类",
-      "米粉",
-      "加工肉制品",
-      "微波炉",
-      "减脂",
-      "高蛋白",
-      "待客",
-      "经典",
-      "川菜",
-      "下饭菜"
-    ]
-  }
+  "EnumsPath": "Config/Enums.json",
+  "NoodlesPath": "Config/Noodles.json",
+  "BeveragesPath": "Config/Beverages.json",
+  "RegionalCuisinesPath": "Config/RegionalCuisines.json",
+  "CookingTechniquesPath": "Config/CookingTechniques.json",
+  "CookingWorkflowPath": "Config/CookingWorkflow.json",
+  "HerbalMedicineSchemaPath": "Config/HerbalMedicineSchema.json",
+  "HerbalMaterialsPath": "Data/HerbalMaterials.json",
+  "DocsIndexPath": "Docs/CategoryDocIndex.json"
 }

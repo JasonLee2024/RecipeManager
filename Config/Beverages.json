@@ -1,0 +1,23 @@
+{
+  "Beverages": {
+    "AlcoholicBeverages": {
+      "Wine": [],
+      "Beer": [],
+      "Spirits": [],
+      "Cocktails": []
+    },
+    "NonAlcoholicBeverages": {
+      "Water": [],
+      "Coffee": [],
+      "Tea": {
+        "ChineseTeaTaxonomyPath": "Config/ChineseTea.json",
+        "GlobalTea": []
+      },
+      "Juice": [],
+      "SoftDrinks": [],
+      "EnergyDrinks": [],
+      "DairyBeverages": [],
+      "PlantBasedMilk": []
+    }
+  }
+}

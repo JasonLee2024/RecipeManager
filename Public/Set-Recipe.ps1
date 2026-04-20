@@ -1,4 +1,4 @@
-﻿function Set-Recipe {
+function Set-Recipe {
     <#
     .SYNOPSIS
         修改并更新现有的菜谱信息 (SRE 容错级实现)。
@@ -58,7 +58,7 @@
 
             # $PSBoundParameters 是一个魔法变量，它记录了用户到底在命令行里输入了哪些参数
             if ($PSBoundParameters.ContainsKey('Category') -and ($TargetRecipe.Category -ne $Category)) {
-                $AllowedCategories = @($script:RecipeConfig.Enums.Categories)
+                $AllowedCategories = @($script:RecipeEnums.Categories)
                 if ($AllowedCategories.Count -gt 0 -and $AllowedCategories -notcontains $Category) {
                     throw "[策略违规] 分类 [$Category] 不在允许集合中。合法集合: $($AllowedCategories -join ', ')"
                 }
