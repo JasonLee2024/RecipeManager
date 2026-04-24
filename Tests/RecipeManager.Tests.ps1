@@ -202,7 +202,7 @@ Describe 'RecipeManager behavior checks' {
         $recipe = [PSCustomObject]@{
             ID = '00000000-0000-0000-0000-000000000001'
             Name = '别名校验样例'
-            Category = '热菜'
+            Category = '炒菜'
             Ingredients = @([PSCustomObject]@{ Item = '测试食材'; Amount = '1份' })
             Steps = @('测试步骤')
             Tags = @('经典')
@@ -287,7 +287,7 @@ Describe 'RecipeManager behavior checks' {
         $ok = [PSCustomObject]@{
             ID = '00000000-0000-0000-0000-000000000010'
             Name = 'ServingNote样例'
-            Category = '热菜'
+            Category = '炒菜'
             Ingredients = @([PSCustomObject]@{ Item = '测'; Amount = '1' })
             Steps = @('步骤')
             Tags = @('经典')
@@ -301,7 +301,7 @@ Describe 'RecipeManager behavior checks' {
         $tooLong = [PSCustomObject]@{
             ID = '00000000-0000-0000-0000-000000000011'
             Name = 'ServingNote过长'
-            Category = '热菜'
+            Category = '炒菜'
             Ingredients = @([PSCustomObject]@{ Item = '测'; Amount = '1' })
             Steps = @('步骤')
             Tags = @('经典')
@@ -314,7 +314,7 @@ Describe 'RecipeManager behavior checks' {
         $blank = [PSCustomObject]@{
             ID = '00000000-0000-0000-0000-000000000012'
             Name = 'ServingNote空白'
-            Category = '热菜'
+            Category = '炒菜'
             Ingredients = @([PSCustomObject]@{ Item = '测'; Amount = '1' })
             Steps = @('步骤')
             Tags = @('经典')
@@ -352,16 +352,93 @@ Describe 'RecipeManager behavior checks' {
         $allRecipes = @(Get-Recipe)
         $target = $allRecipes | Where-Object { $_.Name -eq '包菜洋葱火腿玉米粒炒粉' } | Select-Object -First 1
         $target | Should -Not -BeNullOrEmpty
-        $target.DocPath | Should -Be 'Docs/主食/米粉/包菜洋葱火腿玉米粒炒粉.md'
+        $target.DocPath | Should -Be 'Docs/菜谱/主食/米粉/包菜洋葱火腿玉米粒炒粉.md'
         @($target.DocCategories) | Should -Contain '主食/米粉'
+    }
+
+    It 'sync command creates missing recipe json for newly added docs file' {
+        $docPath = Join-Path $ModuleRoot 'Docs/菜谱/炒菜/自动同步测试.md'
+        $jsonPath = Join-Path $ModuleRoot 'Data/Recipes/炒菜/自动同步测试.json'
+        try {
+            "测试文档" | Set-Content -Path $docPath -Encoding UTF8
+            if (Test-Path -LiteralPath $jsonPath) {
+                Remove-Item -LiteralPath $jsonPath -Force
+            }
+
+            $result = Sync-RecipeDocs -DocPaths @('Docs/菜谱/炒菜/自动同步测试.md')
+            @($result.CreatedFiles) | Should -Contain 'Data/Recipes/炒菜/自动同步测试.json'
+            Test-Path -LiteralPath $jsonPath | Should -BeTrue
+
+            $created = Get-Content -Path $jsonPath -Raw | ConvertFrom-Json
+            $created.Category | Should -Be '炒菜'
+            $created.DocPath | Should -Be 'Docs/菜谱/炒菜/自动同步测试.md'
+            @($created.DocCategories) | Should -Contain '炒菜'
+        }
+        finally {
+            if (Test-Path -LiteralPath $docPath) {
+                Remove-Item -LiteralPath $docPath -Force
+            }
+            if (Test-Path -LiteralPath $jsonPath) {
+                Remove-Item -LiteralPath $jsonPath -Force
+            }
+            Sync-RecipeDocs | Out-Null
+        }
+    }
+
+    It 'sync command appends regional cuisine tags based on doc content' {
+        $docPath = Join-Path $ModuleRoot 'Docs/菜谱/炒菜/地域打标测试.md'
+        $jsonPath = Join-Path $ModuleRoot 'Data/Recipes/炒菜/地域打标测试.json'
+        try {
+            "这是一道典型川菜，适合下饭。" | Set-Content -Path $docPath -Encoding UTF8
+            if (Test-Path -LiteralPath $jsonPath) {
+                Remove-Item -LiteralPath $jsonPath -Force
+            }
+
+            Sync-RecipeDocs -DocPaths @('Docs/菜谱/炒菜/地域打标测试.md') | Out-Null
+            $created = Get-Content -Path $jsonPath -Raw | ConvertFrom-Json
+            @($created.Tags) | Should -Contain '川菜'
+        }
+        finally {
+            if (Test-Path -LiteralPath $docPath) {
+                Remove-Item -LiteralPath $docPath -Force
+            }
+            if (Test-Path -LiteralPath $jsonPath) {
+                Remove-Item -LiteralPath $jsonPath -Force
+            }
+            Sync-RecipeDocs | Out-Null
+        }
+    }
+
+    It 'sync command maps regional alias to canonical cuisine tag' {
+        $docPath = Join-Path $ModuleRoot 'Docs/菜谱/炒菜/地域别名测试.md'
+        $jsonPath = Join-Path $ModuleRoot 'Data/Recipes/炒菜/地域别名测试.json'
+        try {
+            "这道菜是典型四川家常风味。" | Set-Content -Path $docPath -Encoding UTF8
+            if (Test-Path -LiteralPath $jsonPath) {
+                Remove-Item -LiteralPath $jsonPath -Force
+            }
+
+            Sync-RecipeDocs -DocPaths @('Docs/菜谱/炒菜/地域别名测试.md') | Out-Null
+            $created = Get-Content -Path $jsonPath -Raw | ConvertFrom-Json
+            @($created.Tags) | Should -Contain '川菜'
+        }
+        finally {
+            if (Test-Path -LiteralPath $docPath) {
+                Remove-Item -LiteralPath $docPath -Force
+            }
+            if (Test-Path -LiteralPath $jsonPath) {
+                Remove-Item -LiteralPath $jsonPath -Force
+            }
+            Sync-RecipeDocs | Out-Null
+        }
     }
 
     It 'filters 蒸菜 by Category and matches DocPath from index' {
         $steam = @(Get-Recipe -Category '蒸菜')
         $steam.Count | Should -Be 2
         $paths = @($steam | ForEach-Object { $_.DocPath }) | Sort-Object -Unique
-        $paths | Should -Contain 'Docs/蒸菜/五花肉蛋羹.md'
-        $paths | Should -Contain 'Docs/蒸菜/粉蒸肉.md'
+        $paths | Should -Contain 'Docs/菜谱/蒸菜/五花肉蛋羹.md'
+        $paths | Should -Contain 'Docs/菜谱/蒸菜/粉蒸肉.md'
         foreach ($r in $steam) {
             @($r.DocCategories) | Should -Contain '蒸菜'
         }
@@ -425,3 +502,4 @@ Describe 'RecipeManager behavior checks' {
         Import-Module (Join-Path $ModuleRoot 'RecipeManager.psd1') -Force
     }
 }
+

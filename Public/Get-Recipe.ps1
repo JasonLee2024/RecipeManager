@@ -1,4 +1,4 @@
-﻿function Get-Recipe {
+function Get-Recipe {
     <#
     .SYNOPSIS
         查询与检索系统中的菜谱数据。
@@ -9,15 +9,15 @@
     .PARAMETER Name
         要查询的菜谱名称（默认按子串模糊匹配）。
     .PARAMETER Category
-        按分类筛选（如：热菜、汤羹）。
+        按分类筛选（如：炒菜、汤羹）。
     .PARAMETER Tag
         按标签筛选（如：快手菜、减脂）。
     .EXAMPLE
         PS> Get-Recipe
         获取系统中所有的菜谱。
     .EXAMPLE
-        PS> Get-Recipe -Category "热菜" -Tag "快手菜"
-        组合查询：获取所有既是“热菜”又带有“快手菜”标签的记录。
+        PS> Get-Recipe -Category "炒菜" -Tag "快手菜"
+        组合查询：获取所有既是“炒菜”又带有“快手菜”标签的记录。
     .EXAMPLE
         PS> Get-Recipe -Name "番茄"
         模糊查询：名称中包含“番茄”的所有菜谱。

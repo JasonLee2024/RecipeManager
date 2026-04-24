@@ -1,7 +1,7 @@
 {
   "ID": "a3c91e2b-4f08-4d6a-9c11-8e4b2d7f6011",
   "Name": "木耳炒鸡蛋",
-  "Category": "热菜",
+  "Category": "炒菜",
   "PrepTime": 25,
   "Ingredients": [
     {
@@ -63,9 +63,9 @@
     "高蛋白",
     "经典"
   ],
-  "DocPath": "Docs/热菜/木耳炒鸡蛋.md",
+  "CreateTime": "2026-04-19T12:00:00Z",
+  "DocPath": "Docs/菜谱/炒菜/木耳炒鸡蛋.md",
   "DocCategories": [
-    "热菜"
-  ],
-  "CreateTime": "2026-04-19T12:00:00Z"
+    "炒菜"
+  ]
 }

@@ -13,7 +13,7 @@ function Set-Recipe {
     .PARAMETER Ingredients
         新的食材列表。
     .EXAMPLE
-        PS> Set-Recipe -Name "番茄炒蛋" -Category "热菜" -WhatIf
+        PS> Set-Recipe -Name "番茄炒蛋" -Category "炒菜" -WhatIf
         模拟修改菜谱分类，安全审计系统状态而不产生实际副作用。
     #>
     

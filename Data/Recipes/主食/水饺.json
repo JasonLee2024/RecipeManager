@@ -1,0 +1,19 @@
+{
+  "ID": "75e7654b-d155-4790-973b-88f417d2335b",
+  "Name": "水饺",
+  "Category": "主食",
+  "PrepTime": 10,
+  "Ingredients": [],
+  "Steps": [
+    "待补充"
+  ],
+  "Tags": [
+    "经典"
+  ],
+  "DocPath": "Docs/菜谱/主食/面食/水饺.md",
+  "DocCategories": [
+    "主食",
+    "主食/面食"
+  ],
+  "CreateTime": "2026-04-25T00:07:55Z"
+}

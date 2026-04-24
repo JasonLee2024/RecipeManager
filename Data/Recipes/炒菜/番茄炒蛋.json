@@ -1,7 +1,7 @@
 {
   "ID": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   "Name": "番茄炒蛋",
-  "Category": "热菜",
+  "Category": "炒菜",
   "PrepTime": 15,
   "Ingredients": [
     {
@@ -27,9 +27,9 @@
     "快手菜",
     "经典"
   ],
-  "DocPath": "Docs/热菜/番茄炒蛋.md",
+  "CreateTime": "2026-04-06T13:00:00Z",
+  "DocPath": "Docs/菜谱/炒菜/番茄炒蛋.md",
   "DocCategories": [
-    "热菜"
-  ],
-  "CreateTime": "2026-04-06T13:00:00Z"
+    "炒菜"
+  ]
 }

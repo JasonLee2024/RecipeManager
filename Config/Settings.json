@@ -22,11 +22,13 @@
   "NoodlesPath": "Config/Noodles.json",
   "BeveragesPath": "Config/Beverages.json",
   "RegionalCuisinesPath": "Config/RegionalCuisines.json",
+  "RegionalCuisineAliasesPath": "Config/RegionalCuisineAliases.json",
   "CookingTechniquesPath": "Config/CookingTechniques.json",
   "CookingWorkflowPath": "Config/CookingWorkflow.json",
   "HerbalMedicineSchemaPath": "Config/HerbalMedicineSchema.json",
   "HerbalMaterialsPath": "Data/HerbalMaterials.json",
   "HerbalMaterialsRoot": "Data/HerbalMaterials",
   "HerbalMaterialsIndexPath": "Data/HerbalMaterials/index.json",
-  "DocsIndexPath": "Docs/CategoryDocIndex.json"
+  "DocsIndexPath": "Docs/CategoryDocIndex.json",
+  "DocsRecipeRoot": "Docs/菜谱"
 }

@@ -179,6 +179,11 @@ function Invoke-RecipeValidation {
                     throw "[策略违规] 文档路径 [$DocPath] 未在 Docs 索引中登记。"
                 }
 
+                $DocAbsPath = Join-Path $script:ModuleRoot $DocPath
+                if (-not (Test-Path -LiteralPath $DocAbsPath)) {
+                    throw "[策略违规] 文档路径 [$DocPath] 在文件系统中不存在。"
+                }
+
                 if ($Recipe.psobject.Properties.Match('DocCategories').Count -gt 0 -and $null -ne $Recipe.DocCategories -and $Recipe.DocCategories.Count -gt 0) {
                     $IndexedCategories = @($script:CategoryDocIndex.DocToCategory.$DocPath)
                     foreach ($DocCategory in @($Recipe.DocCategories)) {

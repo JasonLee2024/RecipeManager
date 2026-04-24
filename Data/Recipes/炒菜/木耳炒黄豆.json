@@ -1,7 +1,7 @@
 {
   "ID": "b7d82f3c-5e19-5e7b-ad22-9f5c3e8a7122",
   "Name": "木耳炒黄豆",
-  "Category": "热菜",
+  "Category": "炒菜",
   "PrepTime": 40,
   "Ingredients": [
     {
@@ -62,9 +62,9 @@
     "下饭菜",
     "高蛋白"
   ],
-  "DocPath": "Docs/热菜/木耳炒黄豆.md",
+  "CreateTime": "2026-04-19T12:00:00Z",
+  "DocPath": "Docs/菜谱/炒菜/木耳炒黄豆.md",
   "DocCategories": [
-    "热菜"
-  ],
-  "CreateTime": "2026-04-19T12:00:00Z"
+    "炒菜"
+  ]
 }

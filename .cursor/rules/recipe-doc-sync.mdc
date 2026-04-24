@@ -1,0 +1,15 @@
+---
+description: Keep Docs and Data recipe files synchronized
+alwaysApply: true
+---
+
+# Docs 菜谱与数据同步规则
+
+- 当新增或重命名 `Docs/菜谱/**/*.md` 菜谱文档时，必须同步维护 `Data/Recipes/<分类>/<同名>.json`。
+- 若 JSON 不存在，应优先执行 `Sync-RecipeDocs` 自动生成，再进行提交。
+- `DocPath` 必须使用仓库相对路径（如 `Docs/菜谱/炒菜/豆豉炒肉.md`）。
+- `DocCategories` 必须与 `Docs/CategoryDocIndex.json` 中 `DocToCategory` 一致。
+- 分类统一使用 `炒菜`，不得再新增 `热菜` 分类数据或路径。
+- 生成或更新菜谱 JSON 时，`Tags` 必须包含地域菜系标记；地域标签来源仅允许使用 `Config/RegionalCuisines.json` 中定义的条目。
+- 若文档内容可明确识别地域归属（例如 `Docs/菜谱/炒菜/豆豉炒肉.md` 属于川菜），则对应 `Data/Recipes/炒菜/豆豉炒肉.json` 的 `Tags` 必须包含 `川菜`。
+- 若无法确定唯一地域归属，不得臆造标签；应在文档中补充依据后再添加，或暂不添加地域标签并在变更说明中注明原因。

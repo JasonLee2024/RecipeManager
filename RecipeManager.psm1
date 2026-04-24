@@ -115,6 +115,26 @@ catch {
     throw "[模块初始化失败] 地域菜系配置加载或解析失败: $RegionalCuisinesPath。详情: $($_.Exception.Message)"
 }
 
+$RegionalCuisineAliasesPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.RegionalCuisineAliasesPath)) {
+    Join-Path $ScriptPath $script:RecipeConfig.RegionalCuisineAliasesPath
+}
+else {
+    Join-Path $ScriptPath "Config\RegionalCuisineAliases.json"
+}
+
+if (Test-Path $RegionalCuisineAliasesPath) {
+    try {
+        $script:RegionalCuisineAliases = Get-Content -Path $RegionalCuisineAliasesPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+    }
+    catch {
+        throw "[模块初始化失败] 地域菜系别名配置加载或解析失败: $RegionalCuisineAliasesPath。详情: $($_.Exception.Message)"
+    }
+}
+else {
+    # 别名配置允许缺省，回退到仅匹配标准地域标签
+    $script:RegionalCuisineAliases = $null
+}
+
 $CookingTechniquesPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.CookingTechniquesPath)) {
     Join-Path $ScriptPath $script:RecipeConfig.CookingTechniquesPath
 }

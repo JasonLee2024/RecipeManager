@@ -16,6 +16,7 @@
         'Get-HerbalMaterial',
         'Test-HerbalMaterial',
         'Get-BeverageTaxonomy',
+        'Sync-RecipeDocs',
         'Invoke-RecipeUI'
     )
 }
