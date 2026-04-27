@@ -1,6 +1,6 @@
 # Enums 维护与扩展速查
 
-对应配置文件：`Config/Enums.json`
+对应配置文件：`Config/RecipeTaxonomy.json`（原 `Config/Enums.json`）
 
 本文是 `06_Enums_分类与标签体系.md` 的操作补充，聚焦“分类枚举与标签体系如何稳定维护”。
 
@@ -17,7 +17,7 @@
 
 ## 2. 结构约定（当前版本）
 
-`Config/Enums.json` 分三部分：
+`Config/RecipeTaxonomy.json` 分三部分：
 
 - `Categories`：一级分类枚举（菜谱 `Category` 的合法值来源）
 - `CategoryHierarchy`：分类父子关系（用于文档层级和导航语义）

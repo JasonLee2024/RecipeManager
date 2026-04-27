@@ -40,7 +40,7 @@
 示例（仅示意）：
 
 ```powershell
-New-Recipe -Name '示例' -Category '热菜' -Tags '经典' -PassThru |
+New-Recipe -Name '示例' -Category '热菜' -Tags '经典菜' -PassThru |
   ForEach-Object { $_.Techniques = @('白灼','手撕'); $_ } |
   Invoke-RecipeValidation
 ```

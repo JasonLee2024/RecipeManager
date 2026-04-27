@@ -1,0 +1,18 @@
+{
+  "ID": "84d654b6-297f-4a65-afd1-1687c58f7fec",
+  "Name": "风味茄子",
+  "Category": "炒菜",
+  "PrepTime": 10,
+  "Ingredients": [],
+  "Steps": [
+    "待补充"
+  ],
+  "Tags": [
+    "经典菜"
+  ],
+  "DocPath": "Docs/菜谱/炒菜/风味茄子.md",
+  "DocCategories": [
+    "炒菜"
+  ],
+  "CreateTime": "2026-04-25T10:34:04Z"
+}

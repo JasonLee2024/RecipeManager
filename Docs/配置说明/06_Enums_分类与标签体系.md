@@ -1,6 +1,6 @@
 # Enums（分类与标签体系）说明
 
-对应配置文件：`Config/Enums.json`
+对应配置文件：`Config/RecipeTaxonomy.json`（原 `Config/Enums.json`）
 
 ## Categories（一级分类）
 
@@ -19,13 +19,21 @@
 
 为降低扁平标签耦合，采用：
 
-- `PrimaryTags`：主标签集合（例如：主食类、快手菜等）
-- `SecondaryTagsByPrimary`：二级标签（例如：`主食类/米粉`）
+- `PrimaryTags`：主标签集合（例如：快手菜、下饭菜等）
+- `SecondaryTagsByPrimary`：二级标签（编码形式为 `主标签/二级标签`，用于跨分类的细分标签；不要用于重复表达分类层级）
 
 标签校验逻辑会同时允许：
 
-- 主标签本身（如 `主食类`）
-- 以及编码后的二级标签（如 `主食类/米粉`）
+- 主标签本身（如 `快手菜`）
+- 以及编码后的二级标签（如 `口味/酸辣`，示例）
+
+### 食材标签（多级路径）
+
+食材标签不再通过 `SecondaryTagsByPrimary` 维护，而是由独立的 `Config/IngredientTaxonomy.json` 提供多级树形体系。  
+编码形式为：`食材/<大类>/<中类>/<具体>`（可继续向下细化），例如：
+
+- `食材/植物/蔬菜/叶菜/白菜`
+- `食材/动物/蛋类/鸡蛋`
 
 ## ServingNote（可选佐餐说明）
 

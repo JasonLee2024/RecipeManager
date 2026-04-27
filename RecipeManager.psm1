@@ -25,7 +25,7 @@ $EnumsPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.EnumsPat
     Join-Path $ScriptPath $script:RecipeConfig.EnumsPath
 }
 else {
-    Join-Path $ScriptPath "Config\Enums.json"
+    Join-Path $ScriptPath "Config\RecipeTaxonomy.json"
 }
 
 if (-not (Test-Path $EnumsPath)) {
@@ -169,6 +169,24 @@ try {
 }
 catch {
     throw "[模块初始化失败] 烹饪工作流配置加载或解析失败: $CookingWorkflowPath。详情: $($_.Exception.Message)"
+}
+
+$IngredientTaxonomyPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.IngredientTaxonomyPath)) {
+    Join-Path $ScriptPath $script:RecipeConfig.IngredientTaxonomyPath
+}
+else {
+    Join-Path $ScriptPath "Config\IngredientTaxonomy.json"
+}
+
+if (-not (Test-Path $IngredientTaxonomyPath)) {
+    throw "[模块初始化失败] 未找到食材体系配置文件: $IngredientTaxonomyPath"
+}
+
+try {
+    $script:IngredientTaxonomy = Get-Content -Path $IngredientTaxonomyPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+}
+catch {
+    throw "[模块初始化失败] 食材体系配置加载或解析失败: $IngredientTaxonomyPath。详情: $($_.Exception.Message)"
 }
 
 $HerbalMedicineSchemaPath = if (-not [string]::IsNullOrWhiteSpace($script:RecipeConfig.HerbalMedicineSchemaPath)) {

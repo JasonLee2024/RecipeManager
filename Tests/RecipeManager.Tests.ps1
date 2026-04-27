@@ -205,7 +205,7 @@ Describe 'RecipeManager behavior checks' {
             Category = '炒菜'
             Ingredients = @([PSCustomObject]@{ Item = '测试食材'; Amount = '1份' })
             Steps = @('测试步骤')
-            Tags = @('经典')
+            Tags = @('经典菜')
             Techniques = @('白灼', '手撕')
         }
 
@@ -222,7 +222,7 @@ Describe 'RecipeManager behavior checks' {
             Category = '主食'
             Ingredients = @([PSCustomObject]@{ Item = '面条'; Amount = '1份' })
             Steps = @('测试步骤')
-            Tags = @('经典')
+            Tags = @('经典菜')
             NoodleStyle = '餐蛋面'
         }
 
@@ -239,7 +239,7 @@ Describe 'RecipeManager behavior checks' {
             Category = '主食'
             Ingredients = @([PSCustomObject]@{ Item = '面条'; Amount = '1份' })
             Steps = @('测试步骤')
-            Tags = @('经典')
+            Tags = @('经典菜')
             NoodleStyle = '不存在的面'
         }
 
@@ -256,7 +256,7 @@ Describe 'RecipeManager behavior checks' {
             Category = '主食'
             Ingredients = @([PSCustomObject]@{ Item = '面条'; Amount = '1份' })
             Steps = @('测试步骤')
-            Tags = @('经典')
+            Tags = @('经典菜')
             BeverageStyle = '王老吉'
         }
 
@@ -273,7 +273,7 @@ Describe 'RecipeManager behavior checks' {
             Category = '主食'
             Ingredients = @([PSCustomObject]@{ Item = '面条'; Amount = '1份' })
             Steps = @('测试步骤')
-            Tags = @('经典')
+            Tags = @('经典菜')
             BeverageStyle = '不存在的饮料'
         }
 
@@ -290,7 +290,7 @@ Describe 'RecipeManager behavior checks' {
             Category = '炒菜'
             Ingredients = @([PSCustomObject]@{ Item = '测'; Amount = '1' })
             Steps = @('步骤')
-            Tags = @('经典')
+            Tags = @('经典菜')
             ServingNote = '上桌说明：宜配米饭。'
         }
         {
@@ -304,7 +304,7 @@ Describe 'RecipeManager behavior checks' {
             Category = '炒菜'
             Ingredients = @([PSCustomObject]@{ Item = '测'; Amount = '1' })
             Steps = @('步骤')
-            Tags = @('经典')
+            Tags = @('经典菜')
             ServingNote = $long
         }
         {
@@ -317,7 +317,7 @@ Describe 'RecipeManager behavior checks' {
             Category = '炒菜'
             Ingredients = @([PSCustomObject]@{ Item = '测'; Amount = '1' })
             Steps = @('步骤')
-            Tags = @('经典')
+            Tags = @('经典菜')
             ServingNote = '   '
         }
         {
@@ -435,10 +435,11 @@ Describe 'RecipeManager behavior checks' {
 
     It 'filters 蒸菜 by Category and matches DocPath from index' {
         $steam = @(Get-Recipe -Category '蒸菜')
-        $steam.Count | Should -Be 2
+        $steam.Count | Should -Be 3
         $paths = @($steam | ForEach-Object { $_.DocPath }) | Sort-Object -Unique
         $paths | Should -Contain 'Docs/菜谱/蒸菜/五花肉蛋羹.md'
         $paths | Should -Contain 'Docs/菜谱/蒸菜/粉蒸肉.md'
+        $paths | Should -Contain 'Docs/菜谱/蒸菜/蒜泥手撕茄子.md'
         foreach ($r in $steam) {
             @($r.DocCategories) | Should -Contain '蒸菜'
         }
@@ -459,10 +460,26 @@ Describe 'RecipeManager behavior checks' {
         ($result | Select-Object -First 1).Name | Should -Be '番茄炒蛋'
     }
 
-    It 'supports hierarchical food tags under primary tags' {
+    It 'supports hierarchical food navigation via DocCategories' {
         $result = Get-Recipe -Name '炒粉'
         @($result).Count | Should -BeGreaterThan 0
-        ($result | Select-Object -First 1).Tags | Should -Contain '主食类/米粉'
+        @(($result | Select-Object -First 1).DocCategories) | Should -Contain '主食/米粉'
+    }
+
+    It 'accepts secondary tags under cross-category dimensions' {
+        $module = Get-Module RecipeManager
+        $recipe = [PSCustomObject]@{
+            ID = '00000000-0000-0000-0000-000000000020'
+            Name = '二级标签校验样例'
+            Category = '炒菜'
+            Ingredients = @([PSCustomObject]@{ Item = '测'; Amount = '1' })
+            Steps = @('步骤')
+            Tags = @('经典菜', '食材/植物/蔬菜/茄果/番茄', '口味/酸辣', '场景/便当')
+        }
+
+        {
+            & $module { param($r) Invoke-RecipeValidation -Recipe $r -ErrorAction Stop } $recipe
+        } | Should -Not -Throw
     }
 
     It 'rejects category outside Settings enum in Set-Recipe' {

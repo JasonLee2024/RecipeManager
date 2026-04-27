@@ -11,7 +11,7 @@ function Get-Recipe {
     .PARAMETER Category
         按分类筛选（如：炒菜、汤羹）。
     .PARAMETER Tag
-        按标签筛选（如：快手菜、减脂）。
+        按标签筛选（如：快手菜、减脂菜）。
     .EXAMPLE
         PS> Get-Recipe
         获取系统中所有的菜谱。

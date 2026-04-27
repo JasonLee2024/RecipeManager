@@ -73,6 +73,43 @@ function Invoke-RecipeValidation {
             throw "[策略违规] 越权数据: 分类 [$($Recipe.Category)] 非法。合法集合: ($AllowedStr)。"
         }
 
+        function Get-TaxonomyPaths {
+            param(
+                [Parameter(Mandatory = $true)]
+                [object]$Node,
+
+                [Parameter(Mandatory = $true)]
+                [string]$Prefix
+            )
+
+            $paths = @()
+            if ($null -eq $Node) {
+                return $paths
+            }
+
+            $props = @()
+            if ($Node -is [System.Collections.IDictionary]) {
+                $props = @($Node.Keys)
+                foreach ($k in $props) {
+                    $child = $Node[$k]
+                    $nextPrefix = if ([string]::IsNullOrWhiteSpace($Prefix)) { [string]$k } else { "$Prefix/$k" }
+                    $paths += $nextPrefix
+                    $paths += @(Get-TaxonomyPaths -Node $child -Prefix $nextPrefix)
+                }
+                return $paths
+            }
+
+            $props = @($Node.PSObject.Properties | Where-Object { $_.MemberType -eq 'NoteProperty' } | Select-Object -ExpandProperty Name)
+            foreach ($name in $props) {
+                $child = $Node.$name
+                $nextPrefix = if ([string]::IsNullOrWhiteSpace($Prefix)) { [string]$name } else { "$Prefix/$name" }
+                $paths += $nextPrefix
+                $paths += @(Get-TaxonomyPaths -Node $child -Prefix $nextPrefix)
+            }
+
+            return $paths
+        }
+
         # 4. [关键修复] 标签体系校验
         if ($null -ne $Recipe.Tags -and $Recipe.Tags.Count -gt 0) {
             $AllowedTags = @()
@@ -91,6 +128,13 @@ function Invoke-RecipeValidation {
                         }
                     }
                 }
+            }
+
+            # 多级食材体系：允许任意深度的 “食材/.../...”
+            if ($null -ne $script:IngredientTaxonomy -and
+                $null -ne $script:IngredientTaxonomy.Taxonomy -and
+                $null -ne $script:IngredientTaxonomy.Taxonomy.食材) {
+                $AllowedTags += @(Get-TaxonomyPaths -Node $script:IngredientTaxonomy.Taxonomy.食材 -Prefix '食材')
             }
 
             if ($null -ne $script:RegionalCuisines) {

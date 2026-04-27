@@ -150,7 +150,7 @@ function Sync-RecipeDocs {
                     PrepTime      = 10
                     Ingredients   = @()
                     Steps         = @("待补充")
-                    Tags          = @("经典") + $detectedCuisineTags
+                    Tags          = @("经典菜") + $detectedCuisineTags
                     DocPath       = $docRel
                     DocCategories = $categories
                     CreateTime    = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
@@ -182,12 +182,12 @@ function Sync-RecipeDocs {
                     $changed = $true
                 }
                 if (-not $existing.PSObject.Properties.Match('Tags').Count) {
-                    $existing | Add-Member -NotePropertyName 'Tags' -NotePropertyValue @('经典') -Force
+                    $existing | Add-Member -NotePropertyName 'Tags' -NotePropertyValue @('经典菜') -Force
                     $changed = $true
                 }
                 $tags = @($existing.Tags)
                 if ($tags.Count -eq 0) {
-                    $tags = @('经典')
+                    $tags = @('经典菜')
                 }
                 $newTagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
                 foreach ($tag in $tags) { [void]$newTagSet.Add([string]$tag) }
