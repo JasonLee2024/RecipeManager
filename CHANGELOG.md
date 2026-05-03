@@ -2,6 +2,14 @@
 
 本文档记录本项目的重要变更。
 
+## v1.2.3 - 2026-05-03
+
+### 新增
+- 凉菜：`拍黄瓜`、`东北老虎菜`（文档与 `Data/Recipes/凉菜` 分片）。
+- 凉菜专题：`专题_旱黄瓜与小黄瓜家常吃法总览`（生食凉拌、热炒与腌制思路导航，链向上述配方）。
+- `Config/RecipeTaxonomy.json`：`CategoryHierarchy.凉菜` 补充 `拍黄瓜`、`东北老虎菜`。
+- `Docs/CategoryDocIndex.json`：已随 `Sync-RecipeDocs` 重建（含 `凉菜/专题`）。
+
 ## v1.2.2 - 2026-04-27
 
 ### 新增

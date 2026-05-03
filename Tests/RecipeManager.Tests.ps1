@@ -10,6 +10,9 @@ Describe 'RecipeManager behavior checks' {
         $enums | Should -Not -BeNullOrEmpty
         @($enums.Categories) | Should -Contain '主食'
         @($enums.Categories) | Should -Contain '蒸菜'
+        @($enums.TagTaxonomy.PrimaryTags) | Should -Contain '厨具'
+        @($enums.TagTaxonomy.SecondaryTagsByPrimary.厨具) | Should -Contain '砂锅'
+        @($enums.TagTaxonomy.SecondaryTagsByPrimary.厨具) | Should -Contain '炖盅'
     }
 
     It 'loads noodles from dedicated config file' {
