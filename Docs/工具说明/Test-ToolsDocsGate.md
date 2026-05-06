@@ -24,7 +24,7 @@ pwsh Tools/Test-ToolsDocsGate.ps1
 
 仓库 **`.githooks/pre-commit`** 在有暂存变更时，按 **`.github/workflows/quality.yml`** 相同顺序执行：
 
-1. **Pester**（`Install-Module Pester` + `Import-Module RecipeManager` + `Invoke-Pester ... -CI`）
+1. **Pester**（若本机尚无 **Pester 5+** 则 `Install-Module Pester`；否则直接 **`Import-Module Pester`**，再 **`Import-Module RecipeManager`** + **`Invoke-Pester ... -CI`**）
 2. **`Test-ChangelogGate.ps1 -StagedIndex`**
 3. **`Test-DirectoryNamingGate.ps1 -RootRelativePath Docs -StagedIndex`**
 4. **`Test-ToolsDocsGate.ps1`**（本脚本）

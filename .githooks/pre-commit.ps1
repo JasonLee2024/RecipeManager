@@ -15,7 +15,14 @@ else {
     # 与 .github/workflows/quality.yml 顺序一致（RecipeManager.psm1 仅在此处再次导入以供 Pester）
 
     if ($env:RECIPEMANAGER_SKIP_PRECOMMIT_PESTER -ne '1') {
-        Install-Module Pester -Force -Scope CurrentUser -MinimumVersion 5.0
+        $hasPester5 = @(
+            Get-Module -ListAvailable -Name Pester -ErrorAction SilentlyContinue |
+                Where-Object { $_.Version -ge [version]'5.0.0' }
+        ).Count -gt 0
+        if (-not $hasPester5) {
+            Install-Module Pester -Force -Scope CurrentUser -MinimumVersion 5.0
+        }
+        Import-Module Pester -MinimumVersion 5.0 -Force
         Import-Module (Join-Path $repoRoot 'RecipeManager.psd1') -Force
         Invoke-Pester (Join-Path $repoRoot 'Tests/RecipeManager.Tests.ps1') -CI
         if ($LASTEXITCODE -ne 0) {
