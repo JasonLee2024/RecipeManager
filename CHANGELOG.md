@@ -2,7 +2,12 @@
 
 本文档记录本项目的重要变更。
 
-与菜谱文档、分片数据或模块核心代码同批变更时，请同步更新本文件。CI 在 `.github/workflows/quality.yml` 中运行 Pester、本门禁与 `Tools/Test-DocsDirectoryNamingGate.ps1`。本地可执行：`pwsh Tools/Test-ChangelogGate.ps1`（默认对比 `origin/main` 与当前工作区，含未跟踪文件）；核对上一笔提交请使用 `-CommitRange`，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。
+与菜谱文档、分片数据或模块核心代码同批变更时，请同步更新本文件。CI 在 `.github/workflows/quality.yml` 中运行 Pester、本门禁与 `Tools/Test-DirectoryNamingGate.ps1`（默认监控 `Docs`）。本地可执行：`pwsh Tools/Test-ChangelogGate.ps1`（默认对比 `origin/main` 与当前工作区，含未跟踪文件）；核对上一笔提交请使用 `-CommitRange`，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。
+
+## v1.2.5 - 2026-05-06
+
+### 工程与质量
+- **一级子目录命名门禁泛化**：`Tools/Test-DirectoryNamingGate.ps1` 取代 `Tools/Test-DocsDirectoryNamingGate.ps1`，通过 **`-RootRelativePath`** 指定仓库内任意父路径（可多个；禁止 `..`）。CI 调用 `-RootRelativePath Docs`；若需同时约束 `Data/Recipes` 等，可在工作流中追加参数或第二步调用。
 
 ## v1.2.4 - 2026-05-06
 

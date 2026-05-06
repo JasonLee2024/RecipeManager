@@ -16,8 +16,8 @@
 | `Private/` | 内部实现：如 `Invoke-RecipeValidation`、数据提供者等，不导出。 |
 | `UI/` | 与交互界面相关的脚本（与 `Public` 一并导出函数名）。 |
 | `Tests/` | Pester 回归测试。 |
-| `Tools/` | 维护与 CI 辅助脚本（如 `Migrate-RecipesToShardStorage.ps1`、`Test-ChangelogGate.ps1`、`Test-DocsDirectoryNamingGate.ps1`）。 |
-| `.github/workflows/` | GitHub Actions（质量门禁：Pester、变更日志检查、`Docs/` 顶层目录命名）。 |
+| `Tools/` | 维护与 CI 辅助脚本（如 `Migrate-RecipesToShardStorage.ps1`、`Test-ChangelogGate.ps1`、`Test-DirectoryNamingGate.ps1`）。 |
+| `.github/workflows/` | GitHub Actions（质量门禁：Pester、变更日志检查、可配置的**一级子目录命名**检查，当前监控 `Docs`）。 |
 | `.githooks/` | 可选本地钩子（如提交前对 `Docs/菜谱` 触发 `Sync-RecipeDocs`）。 |
 
 ## 2. 模块启动与脚本分层
@@ -53,7 +53,7 @@
 
 ### 5.1 总览
 
-自动化质量门禁由 **GitHub Actions** 工作流 **`.github/workflows/quality.yml`**（工作流名 **Quality**）实现，在 **`push` 与 `pull_request` 指向 `main` 或 `master`** 时，在 **`windows-latest`** 上使用 **`pwsh`** 顺序执行三步：**Pester 回归**、**变更日志门禁**、**`Docs/` 顶层子目录命名门禁**。根目录 **`CHANGELOG.md`** 记录面向使用者的版本级重要变更。
+自动化质量门禁由 **GitHub Actions** 工作流 **`.github/workflows/quality.yml`**（工作流名 **Quality**）实现，在 **`push` 与 `pull_request` 指向 `main` 或 `master`** 时，在 **`windows-latest`** 上使用 **`pwsh`** 顺序执行三步：**Pester 回归**、**变更日志门禁**、**一级子目录命名门禁**（脚本为 **`Tools/Test-DirectoryNamingGate.ps1`**，CI 传入 **`-RootRelativePath Docs`**；亦可监控如 `Data/Recipes` 等其它仓库相对路径）。根目录 **`CHANGELOG.md`** 记录面向使用者的版本级重要变更。
 
 ### 5.2 第一步：Pester 回归
 
@@ -83,20 +83,20 @@
 
 **本地自检（与 CI 的差异）**：在**非 CI**环境下，默认用 **`git diff --name-only <base>`**（默认 `origin/main`）并合并 **未跟踪文件**；若要核对「上一笔提交」与当前 `HEAD` 的区间，请显式传入 **`-CommitRange`**，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。详见脚本内注释。
 
-### 5.4 第三步：`Docs/` 顶层子目录命名（`Tools/Test-DocsDirectoryNamingGate.ps1`）
+### 5.4 第三步：一级子目录命名（`Tools/Test-DirectoryNamingGate.ps1`）
 
-**目的**：`Docs/` 下与 **`菜谱`、`配置说明`、`最佳实践`** 等**同级**的一级子目录，历史上以**中文名**为主；若某次变更在 `Docs/<顶层>/` 下引入此前在 base 提交上**不存在**的顶层目录名，则该名称须与 base 上已有子目录的**主流命名风格**一致（当前实现：统计各子目录名是否含 **CJK 统一表意文字** `\p{IsCJKUnifiedIdeographs}`，多数含 CJK 则要求新增名也含 CJK；纯拉丁占多数则要求新增名不含 CJK；平局时按含 CJK 处理）。
+**目的**：对 **`-RootRelativePath`** 指定的每个仓库相对父路径（正斜杠、无首尾斜杠），在 base 提交上读取 **`git ls-tree <ref>:<路径>`** 中的 **一级子目录**（`tree` 条目），用子目录名是否含 **CJK 统一表意文字** `\p{IsCJKUnifiedIdeographs}` 做**多数决**推断主流风格；若本次 diff 在该父路径下出现**此前不存在的一级子目录名**，则新名须符合该风格（平局按含 CJK）。**默认参数为 `Docs`**，与同级的 `菜谱`、`配置说明` 等中文目录命名习惯对齐；也可传入 **`Data/Recipes`** 等路径以监控其它树（需在 CI 或本地显式增加参数；多根可传数组，例如 `-RootRelativePath Docs,Data/Recipes`）。
 
-**比较范围与跳过条件**：与变更日志门禁相同（PR / push 的 SHA、`fetch-depth: 0`、push 的 `before` 为全零时跳过）；本地默认对比工作区与 `origin/main`（含未跟踪路径），可用 **`-CommitRange`**。
+**比较范围与跳过条件**：与变更日志门禁相同（PR / push 的 SHA、`fetch-depth: 0`、push 的 `before` 为全零时跳过）；本地默认对比工作区与 `origin/main`（含未跟踪路径），可用 **`-CommitRange`**。若本次变更**未触及**任一监控根下的路径，则该根跳过；所有被触及的根均通过才整体成功。
 
-**说明**：仅检查 **一级** `Docs/<名>/`；已有目录下增删 Markdown 不会触发「新增顶层名」逻辑。完整规则以 **`Tools/Test-DocsDirectoryNamingGate.ps1`** 为准。
+**说明**：仅检查「**父路径 / 新增一级名 / …**」这一层；`RootRelativePath` 中禁止 `..` 与绝对路径。完整规则以脚本为准。
 
 ### 5.5 测试与验证状态
 
 | 层级 | 说明 |
 |------|------|
-| **Pester** | 在仓库根目录执行 **`Invoke-Pester ./Tests/RecipeManager.Tests.ps1 -CI`**；套件含针对命名门禁**纯函数**的用例（与 CI 第一步一致；当前共 **50** 条测试）。 |
-| **变更日志与命名脚本** | 本地可执行 `Tools/Test-ChangelogGate.ps1`、`Tools/Test-DocsDirectoryNamingGate.ps1`；CI 中由同一工作流注入相同环境变量语义。 |
+| **Pester** | 在仓库根目录执行 **`Invoke-Pester ./Tests/RecipeManager.Tests.ps1 -CI`**；套件含针对命名门禁**纯函数**的用例（与 CI 第一步一致；当前共 **52** 条测试）。 |
+| **变更日志与命名脚本** | 本地可执行 `Tools/Test-ChangelogGate.ps1`、`Tools/Test-DirectoryNamingGate.ps1`（示例：`pwsh Tools/Test-DirectoryNamingGate.ps1 -RootRelativePath Docs`）；CI 中由同一工作流注入相同环境变量语义。 |
 | **GitHub Actions 整 job** | 是否在云端持续通过，以仓库 **Actions** 中 **Quality** 工作流的运行历史为准。 |
 
 **结论**：脚本逻辑可在本地跑通；**端到端**以 **GitHub Actions** 实际结果为准。

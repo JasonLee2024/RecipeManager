@@ -1,4 +1,4 @@
-# 自动化质量门禁：Pester 回归 + 变更日志（CHANGELOG）与菜谱/数据变更绑定检查 + Docs 顶层目录命名
+# 自动化质量门禁：Pester 回归 + 变更日志（CHANGELOG）与菜谱/数据变更绑定检查 + 目录命名（默认监控 Docs）
 name: Quality
 
 on:
@@ -36,11 +36,11 @@ jobs:
           PUSH_AFTER_SHA: ${{ github.event.after }}
         run: ./Tools/Test-ChangelogGate.ps1
 
-      - name: Docs top-level directory naming gate
+      - name: Directory naming gate (Docs)
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PUSH_BEFORE_SHA: ${{ github.event.before }}
           PUSH_AFTER_SHA: ${{ github.event.after }}
-        run: ./Tools/Test-DocsDirectoryNamingGate.ps1
+        run: ./Tools/Test-DirectoryNamingGate.ps1 -RootRelativePath Docs

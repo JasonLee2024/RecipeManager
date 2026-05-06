@@ -523,36 +523,46 @@ Describe 'RecipeManager behavior checks' {
     }
 }
 
-Describe 'Docs directory naming gate helpers' {
+Describe 'Directory naming gate helpers' {
     BeforeAll {
-        . (Join-Path $ModuleRoot 'Tools/Test-DocsDirectoryNamingGate.ps1')
+        . (Join-Path $ModuleRoot 'Tools/Test-DirectoryNamingGate.ps1')
     }
 
     It 'infers Cjk when majority of peer dirs contain CJK' {
-        Get-DocsNamingStyleFromPeerDirNames -PeerDirNames @('菜谱', '配置说明', 'Foo') | Should -Be 'Cjk'
+        Get-PeerNamingStyleFromDirNames -PeerDirNames @('菜谱', '配置说明', 'Foo') | Should -Be 'Cjk'
     }
 
     It 'infers Ascii when majority have no CJK' {
-        Get-DocsNamingStyleFromPeerDirNames -PeerDirNames @('foo', 'bar', '菜谱') | Should -Be 'Ascii'
+        Get-PeerNamingStyleFromDirNames -PeerDirNames @('foo', 'bar', '菜谱') | Should -Be 'Ascii'
     }
 
     It 'uses Cjk on tie between CJK and non-CJK peer counts' {
-        Get-DocsNamingStyleFromPeerDirNames -PeerDirNames @('foo', 'bar', '菜谱', '配置') | Should -Be 'Cjk'
+        Get-PeerNamingStyleFromDirNames -PeerDirNames @('foo', 'bar', '菜谱', '配置') | Should -Be 'Cjk'
     }
 
     It 'returns null for empty peer list' {
-        Get-DocsNamingStyleFromPeerDirNames -PeerDirNames @() | Should -BeNullOrEmpty
+        Get-PeerNamingStyleFromDirNames -PeerDirNames @() | Should -BeNullOrEmpty
     }
 
     It 'checks Cjk requirement against directory names' {
-        Test-DocsTopLevelDirNameMeetsStyle -Name '架构说明' -RequiredStyle 'Cjk' | Should -Be $true
-        Test-DocsTopLevelDirNameMeetsStyle -Name 'BadEn' -RequiredStyle 'Cjk' | Should -Be $false
+        Test-PeerDirNameMeetsStyle -Name '架构说明' -RequiredStyle 'Cjk' | Should -Be $true
+        Test-PeerDirNameMeetsStyle -Name 'BadEn' -RequiredStyle 'Cjk' | Should -Be $false
     }
 
-    It 'lists new Docs top-level segments not present at base' {
-        $n = @(Get-NewDocsTopLevelDirNames -ChangedPaths @('Docs/菜谱/a.md', 'Docs/NewSeg/b.md') -BasePeerDirNames @('菜谱'))
+    It 'lists new first-level segments under Docs' {
+        $n = @(Get-NewFirstSegmentNamesUnderRoot -ChangedPaths @('Docs/菜谱/a.md', 'Docs/NewSeg/b.md') -BasePeerDirNames @('菜谱') -RootRelativePath 'Docs')
         $n | Should -Contain 'NewSeg'
         $n | Should -Not -Contain '菜谱'
+    }
+
+    It 'lists new first-level segments under a nested root path' {
+        $n = @(Get-NewFirstSegmentNamesUnderRoot -ChangedPaths @('Data/Recipes/主食/a.json', 'Data/Recipes/NewCat/b.json') -BasePeerDirNames @('主食') -RootRelativePath 'Data/Recipes')
+        $n | Should -Contain 'NewCat'
+        $n | Should -Not -Contain '主食'
+    }
+
+    It 'rejects path traversal in RootRelativePath' {
+        { Normalize-RootRelativePaths -Paths @('..\etc') } | Should -Throw
     }
 }
 
