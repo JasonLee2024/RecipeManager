@@ -70,7 +70,8 @@ function Test-TriggersChangelog {
         '^CHANGELOG\.md$',
         '^Tests/RecipeManager\.Tests\.ps1$',
         '^\.github/workflows/',
-        '^Tools/Test-ChangelogGate\.ps1$'
+        '^Tools/Test-ChangelogGate\.ps1$',
+        '^Tools/Test-DocsDirectoryNamingGate\.ps1$'
     )
     foreach ($p in $Paths) {
         if ([string]::IsNullOrWhiteSpace($p)) { continue }

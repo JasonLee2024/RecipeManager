@@ -2,7 +2,7 @@
 
 本文档记录本项目的重要变更。
 
-与菜谱文档、分片数据或模块核心代码同批变更时，请同步更新本文件。CI 在 `.github/workflows/quality.yml` 中运行 Pester 与本门禁。本地可执行：`pwsh Tools/Test-ChangelogGate.ps1`（默认对比 `origin/main` 与当前工作区，含未跟踪文件）；核对上一笔提交请使用 `-CommitRange`，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。
+与菜谱文档、分片数据或模块核心代码同批变更时，请同步更新本文件。CI 在 `.github/workflows/quality.yml` 中运行 Pester、本门禁与 `Tools/Test-DocsDirectoryNamingGate.ps1`。本地可执行：`pwsh Tools/Test-ChangelogGate.ps1`（默认对比 `origin/main` 与当前工作区，含未跟踪文件）；核对上一笔提交请使用 `-CommitRange`，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。
 
 ## v1.2.4 - 2026-05-06
 
@@ -18,7 +18,8 @@
 
 ### 工程与质量
 - **自动化质量门禁**：新增 `Tools/Test-ChangelogGate.ps1`（触及 `Docs/菜谱`、`Data/Recipes`、关键 `Config`、`Public`/`Private`、模块清单或本工作流时，要求同 diff 包含 `CHANGELOG.md`；并校验最新版节标题格式）。
-- GitHub Actions **Quality** 工作流：Windows 运行 Pester + 变更日志门禁。
+- **`Docs/` 顶层目录命名门禁**：新增 `Tools/Test-DocsDirectoryNamingGate.ps1`（若 diff 引入此前不存在的 `Docs/<一级>/` 目录名，须与 base 上既有子目录的主流命名风格一致；含 CJK 与纯拉丁的多数决）。架构文档目录由 `Docs/Architecture` 更名为 **`Docs/架构说明`**，与同级的 `菜谱`、`配置说明` 等命名风格一致。
+- GitHub Actions **Quality** 工作流：Windows 运行 Pester、变更日志门禁与上述 `Docs/` 命名门禁。
 
 ## v1.2.3 - 2026-05-03
 
