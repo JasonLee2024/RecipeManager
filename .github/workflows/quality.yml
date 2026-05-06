@@ -1,4 +1,4 @@
-# 自动化质量门禁：Pester 回归 + 变更日志（CHANGELOG）与菜谱/数据变更绑定检查 + 目录命名（默认监控 Docs）
+# 自动化质量门禁：Pester + CHANGELOG + 目录命名 + Tools 与 Docs/工具说明 文档对齐
 name: Quality
 
 on:
@@ -44,3 +44,6 @@ jobs:
           PUSH_BEFORE_SHA: ${{ github.event.before }}
           PUSH_AFTER_SHA: ${{ github.event.after }}
         run: ./Tools/Test-DirectoryNamingGate.ps1 -RootRelativePath Docs
+
+      - name: Tools script documentation gate
+        run: ./Tools/Test-ToolsDocsGate.ps1

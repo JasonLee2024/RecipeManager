@@ -11,13 +11,13 @@
 | `Config/` | 策略与词库：分类标签、地域菜系、技法、饮料与茶、面食、食材 taxonomy、工作流、药膳 schema 等（JSON 无注释，说明在 `Docs/配置说明`）。 |
 | `Data/Recipes/` | 菜谱**分片**：`Data/Recipes/<一级 Category>/<菜名>.json`，一条菜谱一个文件。 |
 | `Data/HerbalMaterials.json` 与 `Data/HerbalMaterials/` | 药膳药材数据（支持分片与 `index.json` 索引，见 `RecipeManager.psm1` 加载逻辑）。 |
-| `Docs/` | 人类可读文档：菜谱 Markdown、配置说明、最佳实践、**`Docs/架构说明`（本目录）**、以及机器生成的 `CategoryDocIndex.json`。 |
+| `Docs/` | 人类可读文档：菜谱 Markdown、配置说明、最佳实践、**`Docs/架构说明`（本目录）**、**`Docs/工具说明`（与 `Tools/*.ps1` 对应的维护脚本文档）**、以及机器生成的 `CategoryDocIndex.json`。 |
 | `Public/` | 对外导出的命令实现（`.ps1`），如 `Get-Recipe`、`Set-Recipe`、`Sync-RecipeDocs` 等。 |
 | `Private/` | 内部实现：如 `Invoke-RecipeValidation`、数据提供者等，不导出。 |
 | `UI/` | 与交互界面相关的脚本（与 `Public` 一并导出函数名）。 |
 | `Tests/` | Pester 回归测试。 |
-| `Tools/` | 维护与 CI 辅助脚本（如 `Migrate-RecipesToShardStorage.ps1`、`Test-ChangelogGate.ps1`、`Test-DirectoryNamingGate.ps1`）。 |
-| `.github/workflows/` | GitHub Actions（质量门禁：Pester、变更日志检查、可配置的**一级子目录命名**检查，当前监控 `Docs`）。 |
+| `Tools/` | 维护与 CI 辅助脚本（如 `Migrate-RecipesToShardStorage.ps1`、`Test-ChangelogGate.ps1`、`Test-DirectoryNamingGate.ps1`、`Test-ToolsDocsGate.ps1`）。 |
+| `.github/workflows/` | GitHub Actions（质量门禁：Pester、变更日志、`Docs` 一级目录命名、**Tools 与 `Docs/工具说明` 文档对齐**）。 |
 | `.githooks/` | 可选本地钩子（如提交前对 `Docs/菜谱` 触发 `Sync-RecipeDocs`）。 |
 
 ## 2. 模块启动与脚本分层
@@ -53,7 +53,7 @@
 
 ### 5.1 总览
 
-自动化质量门禁由 **GitHub Actions** 工作流 **`.github/workflows/quality.yml`**（工作流名 **Quality**）实现，在 **`push` 与 `pull_request` 指向 `main` 或 `master`** 时，在 **`windows-latest`** 上使用 **`pwsh`** 顺序执行三步：**Pester 回归**、**变更日志门禁**、**一级子目录命名门禁**（脚本为 **`Tools/Test-DirectoryNamingGate.ps1`**，CI 传入 **`-RootRelativePath Docs`**；亦可监控如 `Data/Recipes` 等其它仓库相对路径）。根目录 **`CHANGELOG.md`** 记录面向使用者的版本级重要变更。
+自动化质量门禁由 **GitHub Actions** 工作流 **`.github/workflows/quality.yml`**（工作流名 **Quality**）实现，在 **`push` 与 `pull_request` 指向 `main` 或 `master`** 时，在 **`windows-latest`** 上使用 **`pwsh`** 顺序执行四步：**Pester 回归**、**变更日志门禁**、**一级子目录命名门禁**（**`Tools/Test-DirectoryNamingGate.ps1`**，CI 传入 **`-RootRelativePath Docs`**）、**工具脚本说明文档门禁**（**`Tools/Test-ToolsDocsGate.ps1`**，要求每个 **`Tools/*.ps1`** 对应 **`Docs/工具说明/<同名>.md`**）。根目录 **`CHANGELOG.md`** 记录面向使用者的版本级重要变更。
 
 ### 5.2 第一步：Pester 回归
 
@@ -91,12 +91,20 @@
 
 **说明**：仅检查「**父路径 / 新增一级名 / …**」这一层；`RootRelativePath` 中禁止 `..` 与绝对路径。完整规则以脚本为准。
 
-### 5.5 测试与验证状态
+### 5.5 第四步：工具脚本与说明文档对齐（`Tools/Test-ToolsDocsGate.ps1`）
+
+**目的**：保证 **`Tools/`** 目录下每个 **`.ps1`** 在 **`Docs/工具说明/`** 均有同名 **`.md`** 说明，且文档非空、正文至少包含一次脚本基名，避免「有脚本无文档」。索引与人类说明见 **`Docs/工具说明/00_总览.md`**。
+
+**行为**：扫描当前工作区（与 CI 检出一致），**不依赖** git diff；新增脚本须同步新增对应 Markdown，否则推送失败。
+
+**本地**：`pwsh Tools/Test-ToolsDocsGate.ps1`。
+
+### 5.6 测试与验证状态
 
 | 层级 | 说明 |
 |------|------|
-| **Pester** | 在仓库根目录执行 **`Invoke-Pester ./Tests/RecipeManager.Tests.ps1 -CI`**；套件含针对命名门禁**纯函数**的用例（与 CI 第一步一致；当前共 **52** 条测试）。 |
-| **变更日志与命名脚本** | 本地可执行 `Tools/Test-ChangelogGate.ps1`、`Tools/Test-DirectoryNamingGate.ps1`（示例：`pwsh Tools/Test-DirectoryNamingGate.ps1 -RootRelativePath Docs`）；CI 中由同一工作流注入相同环境变量语义。 |
+| **Pester** | 在仓库根目录执行 **`Invoke-Pester ./Tests/RecipeManager.Tests.ps1 -CI`**；含命名门禁与工具文档门禁**纯函数**用例（当前共 **55** 条测试）。 |
+| **各门禁脚本** | 本地可执行 `Tools/Test-ChangelogGate.ps1`、`Tools/Test-DirectoryNamingGate.ps1`、`Tools/Test-ToolsDocsGate.ps1`；前两者在 CI 中与 PR/push SHA 联动，后者每次全量校验目录对齐。 |
 | **GitHub Actions 整 job** | 是否在云端持续通过，以仓库 **Actions** 中 **Quality** 工作流的运行历史为准。 |
 
 **结论**：脚本逻辑可在本地跑通；**端到端**以 **GitHub Actions** 实际结果为准。

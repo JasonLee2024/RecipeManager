@@ -2,7 +2,16 @@
 
 本文档记录本项目的重要变更。
 
-与菜谱文档、分片数据或模块核心代码同批变更时，请同步更新本文件。CI 在 `.github/workflows/quality.yml` 中运行 Pester、本门禁与 `Tools/Test-DirectoryNamingGate.ps1`（默认监控 `Docs`）。本地可执行：`pwsh Tools/Test-ChangelogGate.ps1`（默认对比 `origin/main` 与当前工作区，含未跟踪文件）；核对上一笔提交请使用 `-CommitRange`，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。
+与菜谱文档、分片数据或模块核心代码同批变更时，请同步更新本文件。CI 在 `.github/workflows/quality.yml` 中运行 Pester、本门禁、`Tools/Test-DirectoryNamingGate.ps1`（默认监控 `Docs`）与 **`Tools/Test-ToolsDocsGate.ps1`**（`Tools/*.ps1` 与 **`Docs/工具说明/*.md`** 对齐）。本地可执行：`pwsh Tools/Test-ChangelogGate.ps1`（默认对比 `origin/main` 与当前工作区，含未跟踪文件）；核对上一笔提交请使用 `-CommitRange`，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。
+
+## v1.2.6 - 2026-05-06
+
+### 新增
+- **`Docs/工具说明/`**：与 `Tools/*.ps1` 一一对应的维护说明（含 **`00_总览.md`**）。
+- **`Tools/Test-ToolsDocsGate.ps1`**：CI 与本地校验「每个 `Tools/*.ps1` 必有 `Docs/工具说明/<同名>.md` 且正文提及脚本基名」。
+
+### 工程与质量
+- **Quality** 工作流增加 **Tools script documentation gate**；变更日志门禁触发列表补充 `Tools/Test-ToolsDocsGate.ps1` 与 `Docs/工具说明/`。
 
 ## v1.2.5 - 2026-05-06
 

@@ -566,3 +566,28 @@ Describe 'Directory naming gate helpers' {
     }
 }
 
+Describe 'Tools documentation gate helpers' {
+    BeforeAll {
+        . (Join-Path $ModuleRoot 'Tools/Test-ToolsDocsGate.ps1')
+    }
+
+    It 'builds expected relative doc path' {
+        Get-ExpectedToolsDocRelativePath -ScriptBaseName 'Sample-Script' -DocsToolsRelativeDir 'Docs/工具说明' |
+            Should -Be 'Docs/工具说明/Sample-Script.md'
+    }
+
+    It 'detects script base name in markdown body' {
+        Test-ToolsDocBodyMentionsScript -MarkdownContent '# Sample-Script 说明，对应 Tools/Sample-Script.ps1' -ScriptBaseName 'Sample-Script' |
+            Should -Be $true
+        Test-ToolsDocBodyMentionsScript -MarkdownContent '无关键词' -ScriptBaseName 'Sample-Script' |
+            Should -Be $false
+    }
+
+    It 'lists basenames of Tools ps1 files' {
+        $toolsDir = Join-Path $ModuleRoot 'Tools'
+        $names = @(Get-ToolsPs1Basenames -ToolsDirectoryAbsolutePath $toolsDir)
+        $names | Should -Contain 'Test-ChangelogGate'
+        $names | Should -Contain 'Test-ToolsDocsGate'
+    }
+}
+
