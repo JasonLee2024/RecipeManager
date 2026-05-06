@@ -18,7 +18,7 @@
 | `Tests/` | Pester 回归测试。 |
 | `Tools/` | 维护与 CI 辅助脚本（如 `Migrate-RecipesToShardStorage.ps1`、`Test-ChangelogGate.ps1`、`Test-DirectoryNamingGate.ps1`、`Test-ToolsDocsGate.ps1`）。 |
 | `.github/workflows/` | GitHub Actions（质量门禁：Pester、变更日志、`Docs` 一级目录命名、**Tools 与 `Docs/工具说明` 文档对齐**）。 |
-| `.githooks/` | 可选本地钩子：`pre-commit` 在有暂存变更时运行 **`Test-ToolsDocsGate.ps1`**（与 CI 对齐），并对暂存的 **`Docs/菜谱/**/*.md`** 触发 **`Sync-RecipeDocs`**（需 `git config core.hooksPath .githooks`）。 |
+| `.githooks/` | 可选本地钩子：`pre-commit` 在有暂存变更时按 **Quality** 工作流顺序运行 **Pester**、**`Test-ChangelogGate -StagedIndex`**、**`Test-DirectoryNamingGate -RootRelativePath Docs -StagedIndex`**、**`Test-ToolsDocsGate`**，再对暂存的 **`Docs/菜谱/**/*.md`** 运行 **`Sync-RecipeDocs`**（需 `git config core.hooksPath .githooks`）。 |
 
 ## 2. 模块启动与脚本分层
 

@@ -18,13 +18,17 @@
 
 .PARAMETER CommitRange
     使用「双提交」比较（git diff BaseRef HeadRef）。本地默认改为「工作区相对 BaseRef」（含未跟踪文件），与 CI 行为区分；需核对上一笔提交时请显式加本开关。
+
+.PARAMETER StagedIndex
+    将 **暂存区（index）** 写成树对象后与 BaseRef 比较（git write-tree），用于 pre-commit：只反映即将提交的变更，不含工作区未暂存修改。不可与 -CommitRange 同时使用；CI 环境不可用。
 #>
 [CmdletBinding()]
 param(
     [string]$BaseRef,
     [string]$HeadRef = 'HEAD',
     [switch]$AllowMissingChangelog,
-    [switch]$CommitRange
+    [switch]$CommitRange,
+    [switch]$StagedIndex
 )
 
 Set-StrictMode -Version Latest
@@ -111,9 +115,17 @@ $inCi = ($env:GITHUB_ACTIONS -eq 'true')
 $base = $BaseRef
 $head = $HeadRef
 $rangeLabel = ''
+$diffAsCommitRange = $false
+
+if ($inCi -and $StagedIndex) {
+    throw '[ChangelogGate] CI 环境请勿使用 -StagedIndex。'
+}
+if ($StagedIndex -and $CommitRange) {
+    throw '[ChangelogGate] -StagedIndex 与 -CommitRange 不可同时使用。'
+}
 
 if ($inCi) {
-    $CommitRange = $true
+    $diffAsCommitRange = $true
     $ev = $env:GITHUB_EVENT_NAME
     if ($ev -eq 'pull_request' -and -not [string]::IsNullOrWhiteSpace($env:PR_BASE_SHA) -and -not [string]::IsNullOrWhiteSpace($env:PR_HEAD_SHA)) {
         $base = $env:PR_BASE_SHA
@@ -135,7 +147,24 @@ if ($inCi) {
         exit 0
     }
 }
+elseif ($StagedIndex) {
+    if ([string]::IsNullOrWhiteSpace($base)) {
+        $base = 'origin/main'
+    }
+    git rev-parse --verify $base 2>$null | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "[ChangelogGate] -StagedIndex：无法解析基准引用 $base"
+    }
+    $treeOut = git write-tree 2>$null
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($treeOut)) {
+        throw '[ChangelogGate] -StagedIndex：git write-tree 失败（是否在 git 仓库根目录执行？）'
+    }
+    $head = $treeOut.Trim()
+    $diffAsCommitRange = $true
+    $rangeLabel = "staged index vs $base"
+}
 elseif ($CommitRange) {
+    $diffAsCommitRange = $true
     if ([string]::IsNullOrWhiteSpace($base)) {
         $base = 'origin/main'
     }
@@ -157,7 +186,7 @@ else {
 }
 
 [string[]]$names = @()
-if ($CommitRange) {
+if ($diffAsCommitRange) {
     $names = @(Get-DiffNameOnly -Base $base -Head $head)
 }
 else {

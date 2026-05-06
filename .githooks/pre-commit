@@ -1,3 +1,4 @@
-#!/usr/bin/env pwsh
-& "$PSScriptRoot/pre-commit.ps1"
-exit $LASTEXITCODE
+#!/bin/sh
+# Git 要求钩子文件名为 pre-commit；部分 pwsh 版本拒绝对无 .ps1 后缀的路径使用 -File，故委托给同目录下的 pre-commit.ps1。
+cd "$(dirname "$0")" || exit 1
+exec pwsh -NoProfile -NoLogo -File "pre-commit.ps1"

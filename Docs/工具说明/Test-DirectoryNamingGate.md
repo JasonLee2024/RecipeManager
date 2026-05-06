@@ -27,6 +27,14 @@ pwsh Tools/Test-DirectoryNamingGate.ps1 -RootRelativePath Docs,Data/Recipes
 pwsh Tools/Test-DirectoryNamingGate.ps1 -CommitRange -BaseRef HEAD~1 -HeadRef HEAD
 ```
 
+### `-StagedIndex`（pre-commit）
+
+与 **`Test-ChangelogGate.ps1 -StagedIndex`** 相同语义，针对即将提交的 index：
+
+```powershell
+pwsh Tools/Test-DirectoryNamingGate.ps1 -RootRelativePath Docs -StagedIndex
+```
+
 ## CI
 
 **Quality** 工作流中当前传入 **`-RootRelativePath Docs`**。路径中禁止 **`..`**。push 的 **`before`** 为全零时与其他门禁一致会跳过。

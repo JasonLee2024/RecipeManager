@@ -22,6 +22,16 @@ pwsh Tools/Test-ChangelogGate.ps1 -CommitRange -BaseRef HEAD~1 -HeadRef HEAD
 
 排障时可使用 **`-AllowMissingChangelog`**（CI 不应使用）。
 
+### `-StagedIndex`（pre-commit）
+
+将 **暂存区** 写成树后与 **`origin/main`**（或 **`-BaseRef`**）比较，路径集合与「即将 `git commit` 的内容」一致，不受工作区未暂存修改干扰：
+
+```powershell
+pwsh Tools/Test-ChangelogGate.ps1 -StagedIndex
+```
+
+不可与 **`-CommitRange`** 同时使用。
+
 ## CI
 
 由 **`.github/workflows/quality.yml`** 在 **Quality** 工作流中调用；环境变量 **`GITHUB_EVENT_NAME`**、**`PR_BASE_SHA`** / **`PR_HEAD_SHA`**、**`PUSH_BEFORE_SHA`** / **`PUSH_AFTER_SHA`** 由 Actions 注入。触及清单以脚本内 **`Test-TriggersChangelog`** 为准。

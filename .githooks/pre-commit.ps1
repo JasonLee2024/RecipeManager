@@ -8,12 +8,40 @@ if ($changedRows.Count -eq 0) {
     exit 0
 }
 
-# 与 CI 中 Tools script documentation gate 相同：每个 Tools/*.ps1 须对应 Docs/工具说明/<同名>.md
-if ($env:RECIPEMANAGER_SKIP_PRECOMMIT_TOOLS_DOC_GATE -ne '1') {
-    $toolsDocGate = Join-Path $repoRoot 'Tools/Test-ToolsDocsGate.ps1'
-    & $toolsDocGate
-    if ($LASTEXITCODE -ne 0) {
-        exit $LASTEXITCODE
+if ($env:RECIPEMANAGER_SKIP_PRECOMMIT_CI_CHECKS -eq '1') {
+    Write-Host 'pre-commit: 已跳过 CI 同源检查（RECIPEMANAGER_SKIP_PRECOMMIT_CI_CHECKS=1）。'
+}
+else {
+    # 与 .github/workflows/quality.yml 顺序一致（RecipeManager.psm1 仅在此处再次导入以供 Pester）
+
+    if ($env:RECIPEMANAGER_SKIP_PRECOMMIT_PESTER -ne '1') {
+        Install-Module Pester -Force -Scope CurrentUser -MinimumVersion 5.0
+        Import-Module (Join-Path $repoRoot 'RecipeManager.psd1') -Force
+        Invoke-Pester (Join-Path $repoRoot 'Tests/RecipeManager.Tests.ps1') -CI
+        if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+        }
+    }
+
+    if ($env:RECIPEMANAGER_SKIP_PRECOMMIT_CHANGELOG_GATE -ne '1') {
+        & (Join-Path $repoRoot 'Tools/Test-ChangelogGate.ps1') -StagedIndex
+        if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+        }
+    }
+
+    if ($env:RECIPEMANAGER_SKIP_PRECOMMIT_DIRECTORY_NAMING_GATE -ne '1') {
+        & (Join-Path $repoRoot 'Tools/Test-DirectoryNamingGate.ps1') -RootRelativePath Docs -StagedIndex
+        if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+        }
+    }
+
+    if ($env:RECIPEMANAGER_SKIP_PRECOMMIT_TOOLS_DOC_GATE -ne '1') {
+        & (Join-Path $repoRoot 'Tools/Test-ToolsDocsGate.ps1')
+        if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+        }
     }
 }
 
@@ -41,5 +69,5 @@ Sync-RecipeDocs -DocPaths @($docPaths.ToArray()) | Out-Null
 git add Docs/CategoryDocIndex.json
 git add Data/Recipes
 
-Write-Host "pre-commit: 已同步 Docs/菜谱 文档对应的菜谱 JSON。"
+Write-Host 'pre-commit: 已同步 Docs/菜谱 文档对应的菜谱 JSON。'
 exit 0

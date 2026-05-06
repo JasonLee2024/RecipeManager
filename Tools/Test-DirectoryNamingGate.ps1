@@ -20,6 +20,9 @@
 
 .PARAMETER CommitRange
     使用 git diff BaseRef HeadRef。
+
+.PARAMETER StagedIndex
+    与 Test-ChangelogGate.ps1 相同：用 git write-tree 得到暂存区树，与 BaseRef 做 diff（pre-commit）。不可与 -CommitRange 同时用；CI 不可用。
 #>
 [CmdletBinding()]
 param(
@@ -28,7 +31,8 @@ param(
 
     [string]$BaseRef,
     [string]$HeadRef = 'HEAD',
-    [switch]$CommitRange
+    [switch]$CommitRange,
+    [switch]$StagedIndex
 )
 
 Set-StrictMode -Version Latest
@@ -189,8 +193,14 @@ function Invoke-DirectoryNamingGateMain {
     $useCommitRange = $false
     $rangeLabel = ''
 
+    if ($inCi -and $StagedIndex) {
+        throw '[DirNamingGate] CI 环境请勿使用 -StagedIndex。'
+    }
+    if ($StagedIndex -and $CommitRange) {
+        throw '[DirNamingGate] -StagedIndex 与 -CommitRange 不可同时使用。'
+    }
+
     if ($inCi) {
-        $CommitRange = $true
         $useCommitRange = $true
         $ev = $env:GITHUB_EVENT_NAME
         if ($ev -eq 'pull_request' -and -not [string]::IsNullOrWhiteSpace($env:PR_BASE_SHA) -and -not [string]::IsNullOrWhiteSpace($env:PR_HEAD_SHA)) {
@@ -212,6 +222,22 @@ function Invoke-DirectoryNamingGateMain {
             Write-Host "[DirNamingGate] CI 环境未识别到 PR/push SHA，跳过门禁。"
             exit 0
         }
+    }
+    elseif ($StagedIndex) {
+        if ([string]::IsNullOrWhiteSpace($base)) {
+            $base = 'origin/main'
+        }
+        git rev-parse --verify $base 2>$null | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "[DirNamingGate] -StagedIndex：无法解析基准引用 $base"
+        }
+        $treeOut = git write-tree 2>$null
+        if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($treeOut)) {
+            throw '[DirNamingGate] -StagedIndex：git write-tree 失败'
+        }
+        $head = $treeOut.Trim()
+        $useCommitRange = $true
+        $rangeLabel = "staged index vs $base"
     }
     elseif ($CommitRange) {
         $useCommitRange = $true
