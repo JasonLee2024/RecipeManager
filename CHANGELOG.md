@@ -2,6 +2,24 @@
 
 本文档记录本项目的重要变更。
 
+与菜谱文档、分片数据或模块核心代码同批变更时，请同步更新本文件。CI 在 `.github/workflows/quality.yml` 中运行 Pester 与本门禁。本地可执行：`pwsh Tools/Test-ChangelogGate.ps1`（默认对比 `origin/main` 与当前工作区，含未跟踪文件）；核对上一笔提交请使用 `-CommitRange`，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。
+
+## v1.2.4 - 2026-05-06
+
+### 新增
+- **上海青**系列：清炒、蒜蓉蚝油、香菇、白灼、凉拌、油豆腐、腊肉及 `主食/焖饭/上海青菜饭`；专题 `专题_上海青家常与经典做法`。
+- **葛根粉条**专题与菜谱：凉拌、杂锦炒、韩式杂菜、花蛤炒、粉条煲、豆角香肠炖、五花肉焖等（文档 + `Data/Recipes`）；`Config/IngredientTaxonomy.json` 增补 `上海青`、`菌菇/香菇`、`粉丝`、`葛根粉条`、`玉米淀粉`，`海鲜/鲈鱼`。
+- **鱼鲜导航**：`Docs/菜谱/炒菜/鱼鲜/`、`Docs/菜谱/汤羹/鱼鲜/` 子目录，`DocCategories` 含 `炒菜/鱼鲜`、`汤羹/鱼鲜`（豆瓣鲫/鲤、红烧鲈鱼、带鱼、水煮鱼、花蛤炒粉条、鲮鱼猪骨汤等）。
+- **红烧鲈鱼**（干拍粉煎制要点）及对应分片数据。
+- **仓库卫生**：根目录 `.gitignore` 忽略 `*.bak`、`testResults.xml`；清理误生成的无 `专题_` 前缀重复菜谱 JSON。
+
+### 变更
+- 多份专题与家常菜谱 JSON 与文档路径、食材标签对齐（含 `Update-RecipeIngredientTags` / `Sync-RecipeDocs` 工作流结果）。
+
+### 工程与质量
+- **自动化质量门禁**：新增 `Tools/Test-ChangelogGate.ps1`（触及 `Docs/菜谱`、`Data/Recipes`、关键 `Config`、`Public`/`Private`、模块清单或本工作流时，要求同 diff 包含 `CHANGELOG.md`；并校验最新版节标题格式）。
+- GitHub Actions **Quality** 工作流：Windows 运行 Pester + 变更日志门禁。
+
 ## v1.2.3 - 2026-05-03
 
 ### 新增
