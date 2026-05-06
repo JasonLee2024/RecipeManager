@@ -8,9 +8,12 @@
 
 新手（下厨跟做者 / 终端检索用户 / 菜谱维护人员）请先读：**`Docs/新手入门.md`**。
 
+模块目录与启动分层（架构总览）：**`Docs/Architecture/README.md`**。
+
 建议阅读顺序：
 
 - `Docs/新手入门.md`（三类用户分节导读）
+- `Docs/Architecture/README.md`（仓库与模块结构）
 - `Docs/配置说明/00_总览.md`
 - `Docs/配置说明/01_Beverages_饮料分类.md`
 - `Docs/配置说明/01a_Beverages_维护与扩展速查.md`
