@@ -4,12 +4,30 @@
   "Category": "炒菜",
   "PrepTime": 15,
   "Ingredients": [
-    { "Item": "上海青", "Amount": "400～500g" },
-    { "Item": "大蒜", "Amount": "2～3瓣" },
-    { "Item": "食盐", "Amount": "适量" },
-    { "Item": "植物油", "Amount": "适量" },
-    { "Item": "蚝油", "Amount": "少许（可选）" },
-    { "Item": "鸡精", "Amount": "少许（可选）" }
+    {
+      "Item": "上海青",
+      "Amount": "400～500g"
+    },
+    {
+      "Item": "大蒜",
+      "Amount": "2～3瓣"
+    },
+    {
+      "Item": "食盐",
+      "Amount": "适量"
+    },
+    {
+      "Item": "植物油",
+      "Amount": "适量"
+    },
+    {
+      "Item": "蚝油",
+      "Amount": "少许（可选）"
+    },
+    {
+      "Item": "鸡精",
+      "Amount": "少许（可选）"
+    }
   ],
   "Steps": [
     "大棵上海青将菜梗切段、菜叶另放；小棵可整株或对半剖开，洗净沥干。",

@@ -1,0 +1,9 @@
+# Editor / OS
+.DS_Store
+Thumbs.db
+
+# Test output
+testResults.xml
+
+# Local backups (do not commit)
+*.bak

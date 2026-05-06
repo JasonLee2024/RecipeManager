@@ -4,12 +4,30 @@
   "Category": "炒菜",
   "PrepTime": 25,
   "Ingredients": [
-    { "Item": "上海青", "Amount": "400～500g" },
-    { "Item": "腊肉", "Amount": "80～120g，切薄片" },
-    { "Item": "大蒜", "Amount": "2～3瓣" },
-    { "Item": "生抽", "Amount": "约1茶匙（可选）" },
-    { "Item": "食盐", "Amount": "少许或省略" },
-    { "Item": "植物油", "Amount": "少量" }
+    {
+      "Item": "上海青",
+      "Amount": "400～500g"
+    },
+    {
+      "Item": "腊肉",
+      "Amount": "80～120g，切薄片"
+    },
+    {
+      "Item": "大蒜",
+      "Amount": "2～3瓣"
+    },
+    {
+      "Item": "生抽",
+      "Amount": "约1茶匙（可选）"
+    },
+    {
+      "Item": "食盐",
+      "Amount": "少许或省略"
+    },
+    {
+      "Item": "植物油",
+      "Amount": "少量"
+    }
   ],
   "Steps": [
     "腊肉片入锅，中小火煸炒出油、边缘略卷曲透明。",

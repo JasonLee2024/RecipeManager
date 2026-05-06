@@ -4,15 +4,42 @@
   "Category": "炒菜",
   "PrepTime": 20,
   "Ingredients": [
-    { "Item": "上海青", "Amount": "350～450g" },
-    { "Item": "油豆腐", "Amount": "150～200g，对半切开" },
-    { "Item": "大蒜", "Amount": "2～3瓣" },
-    { "Item": "生抽", "Amount": "约1汤匙" },
-    { "Item": "蚝油", "Amount": "约1汤匙" },
-    { "Item": "白糖", "Amount": "少许" },
-    { "Item": "食盐", "Amount": "适量" },
-    { "Item": "植物油", "Amount": "适量" },
-    { "Item": "清水", "Amount": "2～3汤匙" }
+    {
+      "Item": "上海青",
+      "Amount": "350～450g"
+    },
+    {
+      "Item": "油豆腐",
+      "Amount": "150～200g，对半切开"
+    },
+    {
+      "Item": "大蒜",
+      "Amount": "2～3瓣"
+    },
+    {
+      "Item": "生抽",
+      "Amount": "约1汤匙"
+    },
+    {
+      "Item": "蚝油",
+      "Amount": "约1汤匙"
+    },
+    {
+      "Item": "白糖",
+      "Amount": "少许"
+    },
+    {
+      "Item": "食盐",
+      "Amount": "适量"
+    },
+    {
+      "Item": "植物油",
+      "Amount": "适量"
+    },
+    {
+      "Item": "清水",
+      "Amount": "2～3汤匙"
+    }
   ],
   "Steps": [
     "热锅倒植物油，爆香蒜片或蒜末。",
