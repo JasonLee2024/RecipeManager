@@ -8,6 +8,15 @@ if ($changedRows.Count -eq 0) {
     exit 0
 }
 
+# 与 CI 中 Tools script documentation gate 相同：每个 Tools/*.ps1 须对应 Docs/工具说明/<同名>.md
+if ($env:RECIPEMANAGER_SKIP_PRECOMMIT_TOOLS_DOC_GATE -ne '1') {
+    $toolsDocGate = Join-Path $repoRoot 'Tools/Test-ToolsDocsGate.ps1'
+    & $toolsDocGate
+    if ($LASTEXITCODE -ne 0) {
+        exit $LASTEXITCODE
+    }
+}
+
 $docPaths = [System.Collections.Generic.List[string]]::new()
 foreach ($row in $changedRows) {
     if ([string]::IsNullOrWhiteSpace($row)) { continue }

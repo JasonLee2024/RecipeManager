@@ -19,3 +19,13 @@ pwsh Tools/Test-ToolsDocsGate.ps1
 ## CI
 
 由 **Quality** 工作流在 Pester、变更日志门禁、目录命名门禁之后运行；每次推送/PR 均扫描当前检出树，无需 git diff。
+
+## 本地 pre-commit
+
+仓库 **`.githooks/pre-commit`** 在有暂存变更时会调用本脚本（与 CI 同一校验）。请先启用钩子路径：
+
+```powershell
+git config core.hooksPath .githooks
+```
+
+单次提交若需跳过本检查（不推荐）：将环境变量 **`RECIPEMANAGER_SKIP_PRECOMMIT_TOOLS_DOC_GATE`** 设为 **`1`** 后再执行 **`git commit`**。

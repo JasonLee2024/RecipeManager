@@ -2,7 +2,12 @@
 
 本文档记录本项目的重要变更。
 
-与菜谱文档、分片数据或模块核心代码同批变更时，请同步更新本文件。CI 在 `.github/workflows/quality.yml` 中运行 Pester、本门禁、`Tools/Test-DirectoryNamingGate.ps1`（默认监控 `Docs`）与 **`Tools/Test-ToolsDocsGate.ps1`**（`Tools/*.ps1` 与 **`Docs/工具说明/*.md`** 对齐）。本地可执行：`pwsh Tools/Test-ChangelogGate.ps1`（默认对比 `origin/main` 与当前工作区，含未跟踪文件）；核对上一笔提交请使用 `-CommitRange`，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。
+与菜谱文档、分片数据或模块核心代码同批变更时，请同步更新本文件。CI 在 `.github/workflows/quality.yml` 中运行 Pester、本门禁、`Tools/Test-DirectoryNamingGate.ps1`（默认监控 `Docs`）与 **`Tools/Test-ToolsDocsGate.ps1`**（`Tools/*.ps1` 与 **`Docs/工具说明/*.md`** 对齐）。启用 **`.githooks`** 后，本地 **`git commit`** 亦会运行 **`Test-ToolsDocsGate.ps1`**（见 **`Docs/工具说明/Test-ToolsDocsGate.md`**）。本地可执行：`pwsh Tools/Test-ChangelogGate.ps1`（默认对比 `origin/main` 与当前工作区，含未跟踪文件）；核对上一笔提交请使用 `-CommitRange`，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。
+
+## v1.2.7 - 2026-05-06
+
+### 工程与质量
+- **`.githooks/pre-commit`**：存在暂存变更时先于菜谱同步执行 **`Tools/Test-ToolsDocsGate.ps1`**（与 CI 同源）；可通过 **`RECIPEMANAGER_SKIP_PRECOMMIT_TOOLS_DOC_GATE=1`** 单次跳过。
 
 ## v1.2.6 - 2026-05-06
 
