@@ -4,6 +4,11 @@
 
 与菜谱文档、分片数据或模块核心代码同批变更时，请同步更新本文件。CI 在 `.github/workflows/quality.yml` 中运行 Pester、本门禁、`Tools/Test-DirectoryNamingGate.ps1`（默认监控 `Docs`）与 **`Tools/Test-ToolsDocsGate.ps1`**（`Tools/*.ps1` 与 **`Docs/工具说明/*.md`** 对齐）。启用 **`.githooks`** 后，本地 **`git commit`**（有暂存时）按 **Quality** 同源顺序运行上述检查（变更日志与目录命名使用 **`-StagedIndex`**，见 **`Docs/工具说明/Test-ToolsDocsGate.md`**）。本地可执行：`pwsh Tools/Test-ChangelogGate.ps1`（默认对比 `origin/main` 与当前工作区，含未跟踪文件）；核对上一笔提交请使用 `-CommitRange`，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。
 
+## v1.2.11 - 2026-05-08
+
+### 新增
+- **专题：土豆肉丝三做法**（`Docs/菜谱/炒菜/专题/专题_土豆肉丝三做法.md` / `Data/Recipes/炒菜/专题_土豆肉丝三做法.json`）：青椒清淡版、酸辣版、红烧家常版步骤与通用技巧；文档注明地域归属不唯一故不单列菜系标签。`Docs/CategoryDocIndex.json` 已随 `Sync-RecipeDocs` 更新。
+
 ## v1.2.10 - 2026-05-06
 
 ### 变更
