@@ -4,6 +4,12 @@
 
 与菜谱文档、分片数据或模块核心代码同批变更时，请同步更新本文件。CI 在 `.github/workflows/quality.yml` 中运行 Pester、本门禁、`Tools/Test-DirectoryNamingGate.ps1`（默认监控 `Docs`）与 **`Tools/Test-ToolsDocsGate.ps1`**（`Tools/*.ps1` 与 **`Docs/工具说明/*.md`** 对齐）。启用 **`.githooks`** 后，本地 **`git commit`**（有暂存时）按 **Quality** 同源顺序运行上述检查（变更日志与目录命名使用 **`-StagedIndex`**，见 **`Docs/工具说明/Test-ToolsDocsGate.md`**）。本地可执行：`pwsh Tools/Test-ChangelogGate.ps1`（默认对比 `origin/main` 与当前工作区，含未跟踪文件）；核对上一笔提交请使用 `-CommitRange`，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。
 
+## v1.2.13 - 2026-05-09
+
+### 新增
+- **葛根粉条 × 土豆毛豆**：`毛豆土豆烧粉条`、`青圆椒炒洋葱`、`土豆毛豆葛根粉条一锅烧`（`Docs/菜谱/炒菜/*.md` 与 `Data/Recipes/炒菜/*.json`）；`专题_葛根粉条搭配与烹饪总览` 补充分项与搭配索引。
+- **木耳菜**：`凉拌木耳菜`、`木耳菜蛋汤`、`清炒木耳菜`、`上汤木耳菜` 及 `专题_木耳菜家常做法总览`（凉菜 / 汤羹 / 炒菜文档与分片）。`Docs/CategoryDocIndex.json` 已随 `Sync-RecipeDocs` 重建。
+
 ## v1.2.12 - 2026-05-08
 
 ### 变更
