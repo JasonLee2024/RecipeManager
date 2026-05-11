@@ -1,5 +1,20 @@
 # RecipeManager 文档说明
 
+## 本地加载模块：须用 PowerShell 7（`pwsh`）
+
+本仓库中的 **RecipeManager** 模块在 **`RecipeManager.psd1`** 里声明了 **`PowerShellVersion = '7.0'`**，因此在本机执行 **`Import-Module RecipeManager`**（或 `Import-Module .\RecipeManager.psd1`）、**`Sync-RecipeDocs`**、**`Get-Recipe`** 等命令时，**必须使用 PowerShell 7 或更高版本**。
+
+| 终端 | 能否加载本模块 |
+|------|----------------|
+| **PowerShell 7**（可执行文件名为 **`pwsh`**；Windows 终端里常显示为「PowerShell」且版本为 7.x） | 可以 |
+| **Windows PowerShell 5.1**（系统自带的「Windows PowerShell」） | **不可以**（会提示版本不满足或无法导入模块） |
+
+**建议操作**：在 Windows 终端、VS Code / Cursor 集成终端等处，**选用 PowerShell 7 配置文件**，或在任意终端先运行 **`pwsh`** 再执行 `Import-Module`。验证版本可运行：`$PSVersionTable.PSVersion`（`Major` 应为 **7** 及以上）。若尚未安装 PowerShell 7，请参阅微软文档：[在 Windows 上安装 PowerShell](https://learn.microsoft.com/powershell/scripting/install/installing-powershell-on-windows)。
+
+**说明**：只阅读 **`Docs/菜谱/`** 下的 Markdown 菜谱时，**不依赖** PowerShell 7；**只有**要使用模块提供的命令与数据接口时，才需要 `pwsh` 环境。
+
+---
+
 本目录用于存放四类内容：
 
 1. **菜谱文档**：按分类层级归档的 Markdown 菜谱（例如 `主食/面食/水饺.md`）。

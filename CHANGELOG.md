@@ -4,6 +4,15 @@
 
 与菜谱文档、分片数据或模块核心代码同批变更时，请同步更新本文件。CI 在 `.github/workflows/quality.yml` 中运行 Pester、本门禁、`Tools/Test-DirectoryNamingGate.ps1`（默认监控 `Docs`）与 **`Tools/Test-ToolsDocsGate.ps1`**（`Tools/*.ps1` 与 **`Docs/工具说明/*.md`** 对齐）。启用 **`.githooks`** 后，本地 **`git commit`**（有暂存时）按 **Quality** 同源顺序运行上述检查（变更日志与目录命名使用 **`-StagedIndex`**，见 **`Docs/工具说明/Test-ToolsDocsGate.md`**）。本地可执行：`pwsh Tools/Test-ChangelogGate.ps1`（默认对比 `origin/main` 与当前工作区，含未跟踪文件）；核对上一笔提交请使用 `-CommitRange`，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。
 
+## v1.2.14 - 2026-05-11
+
+### 新增
+- **汤羹**：`番茄土豆香菇瘦肉葛根粉丝汤`（`Docs/菜谱/汤羹/番茄土豆香菇瘦肉葛根粉丝汤.md` / `Data/Recipes/汤羹/番茄土豆香菇瘦肉葛根粉丝汤.json`）：番茄土豆汤底、滑肉与葛根粉丝一锅拌饭；文档注明地域归属不唯一故不单列菜系标签。`专题_葛根粉条搭配与烹饪总览` 分项表增加本篇链接。`Docs/CategoryDocIndex.json` 已随 `Sync-RecipeDocs` 更新。
+
+### 文档
+- **`Docs/README.md`**：在文首增加「须用 PowerShell 7（`pwsh`）加载模块」说明，区分 Windows PowerShell 5.1，附版本检查与官方安装链接。
+- **`Docs/新手入门.md`**：在「环境与加载模块」中明确勿在 5.1 中加载，应使用 **`pwsh`** 后再 `Import-Module`。
+
 ## v1.2.13 - 2026-05-09
 
 ### 新增
