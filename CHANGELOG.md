@@ -4,6 +4,16 @@
 
 与菜谱文档、分片数据或模块核心代码同批变更时，请同步更新本文件。CI 在 `.github/workflows/quality.yml` 中运行 Pester、本门禁、`Tools/Test-DirectoryNamingGate.ps1`（默认监控 `Docs`）与 **`Tools/Test-ToolsDocsGate.ps1`**（`Tools/*.ps1` 与 **`Docs/工具说明/*.md`** 对齐）。启用 **`.githooks`** 后，本地 **`git commit`**（有暂存时）按 **Quality** 同源顺序运行上述检查（变更日志与目录命名使用 **`-StagedIndex`**，见 **`Docs/工具说明/Test-ToolsDocsGate.md`**）。本地可执行：`pwsh Tools/Test-ChangelogGate.ps1`（默认对比 `origin/main` 与当前工作区，含未跟踪文件）；核对上一笔提交请使用 `-CommitRange`，例如 `-BaseRef HEAD~1 -HeadRef HEAD`。
 
+## v1.2.17 - 2026-05-12
+
+### 文档
+- **凉菜 `拍黄瓜`**：扩充预处理（选瓜、拍裂、杀水）、料汁配比表、热油激香与变化版料汁；文末链回 **`专题_旱黄瓜与小黄瓜家常吃法总览`**。对应更新 **`Data/Recipes/凉菜/拍黄瓜.json`**（用料、步骤、标签、`PrepTime`）。
+- **`专题_旱黄瓜与小黄瓜家常吃法总览`**：导图 TOC 与「生食与凉拌」中为 **`拍黄瓜`**、**`东北老虎菜`** 增补「详解」路径说明，并与蘸酱菜思路对照。
+- **`东北老虎菜`**：文末增加回到上述专题的导航。
+
+### 同步
+- 已通过 **`Sync-RecipeDocs`** 校验文档与分片映射。
+
 ## v1.2.16 - 2026-05-11
 
 ### 文档
